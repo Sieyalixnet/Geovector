@@ -67,14 +67,14 @@ export class Vector {
     mul(vector) {
         this.Data.mul(vector.Data)
     }
-    minus(vector) {
-        this.Data.minus(vector.Data)
+    sub(vector) {
+        this.Data.sub(vector.Data)
     }
-    plus(vector) {
-        this.Data.plus(vector.Data)
+    add(vector) {
+        this.Data.add(vector.Data)
     }
-    divide(vector) { 
-        this.Data.divide(vector.Data) 
+    div(vector) { 
+        this.Data.div(vector.Data) 
     }
     mm(vector) {
         this.Data.mm(vector.Data)
