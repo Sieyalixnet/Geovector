@@ -11,24 +11,26 @@
         v-for="(item, index) in props.file.ChannelList"
         :key="index"
       >
-        <Layer @click="trig(index)"  :layer="item" :canvansid="`${props.file.name}_${index}`"></Layer>
+      <Layer @renderMain="render_main(index)"   :layer="item" :canvansid="`${props.file.name}_${index}`"></Layer>
       </div>
     </div>
-    <button @click="render_thumbnails_to_canvas()">render</button>
+    <button @click="render_thumbnails_to_canvas()">Update Thumbnails</button>
   </div>
 </template>
 
 <script setup>
 import { reactive } from "@vue/reactivity";
-import { provide } from "@vue/runtime-core";
+import { onMounted, provide } from "@vue/runtime-core";
 import Layer from "./layers/layer.vue";
 const props = defineProps(["file"]);
 
 let render_thumbnails_to_canvas = () => {
   props.file.render_thumbnails_to_canvas();
 };
-
-let trig=(index)=>{props.file.render_to_main_canvas(index)}
+onMounted(()=>{
+  render_thumbnails_to_canvas();
+})
+let render_main=(index)=>{props.file.render_to_main_canvas(index)}
 </script>
 
 <style lang="scss" scoped>

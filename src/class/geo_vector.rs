@@ -143,6 +143,23 @@ impl BaseVector {
         self.total_cols = new_data[0].len();
         self.data = new_data.into_iter().flat_map(|x| x).collect();
     }
+    pub fn padding_times(&mut self, padding_value: f64,times:usize) {
+        let mut new_data = self.reshape(self.total_cols);
+        for row in &mut new_data {
+            for i in 0..times{
+            row.push(padding_value);
+            row.insert(0, padding_value);}
+        }
+        let new_length = new_data[0].len();
+        let padding_row = vec![padding_value; new_length];
+        for i in 0..times{
+        new_data.insert(0, padding_row.clone());
+        new_data.push(padding_row.clone());}
+
+        self.total_rows = new_data.len();
+        self.total_cols = new_data[0].len();
+        self.data = new_data.into_iter().flat_map(|x| x).collect();
+    }
     pub fn conv2d_array(&self, kernel: Vec<f64>, stride: usize) -> Vec<f64> {
         //let _timer = Timer::new("conv2d");
         let kernel = reshape(&kernel, (kernel.len() as f64).sqrt().floor() as usize);
@@ -310,7 +327,7 @@ mod tests {
             test_vec[i] = i as f64;
         }
         let a = BaseVector::new(5, 8, test_vec);
-        let kernel = vec![0.5; 4];
+        let kernel = vec![0.5; 16];
         let b = a.conv2d_array(kernel, 1);
         println!("{:?}", &b.len());
         println!("{:?}", &b);

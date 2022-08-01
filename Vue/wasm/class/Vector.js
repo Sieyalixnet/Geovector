@@ -61,15 +61,12 @@ export class Vector {
     set_index(index, value) { this.Data.set_index(index, value) }
     conv2d(kernel, stride) {
         this.Data.conv2d(kernel, stride)//kernel should reshape in one dimension
-        this.update
+        this.update()
     }
     conv2d_array(kernel, stride) {//this whill return a 1-dimension array
         return this.Data.conv2d_array(kernel, stride)
     }
-    padding_once(padding_value) {
-        this.Data.padding(padding_value);
-        this.update()
-    }
+
     update() {
         this.ptr = this.get_ptr()
         this.cols = this.get_cols()
@@ -91,7 +88,14 @@ export class Vector {
         this.Data.mm(vector.Data)
         this.Data.log_data_string()
     }
-
+    padding(padding_value) {
+        this.Data.padding(padding_value);
+        this.update()
+    }
+    padding_times(padding_value,times){
+        this.Data.padding_times(padding_value,times);
+        this.update()
+    }
     //TODO description
     render_thumbnails(canvasID) {
         let ratio = 1;
