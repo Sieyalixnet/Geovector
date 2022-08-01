@@ -2,6 +2,7 @@
   <div>
     <TheHeader></TheHeader>
     <button @click="handleClick">Click me</button>
+    <Imagefile></Imagefile>
     <TheFooter></TheFooter>
   </div>
 </template>
@@ -9,14 +10,15 @@
 <script setup>
 import TheHeader from "./components/Global/TheHeader.vue";
 import TheFooter from "./components/Global/TheFooter.vue";
+import Imagefile from "./components/Layers/ImageFile.vue";
 import { inject, onMounted, provide, reactive } from "vue";
 const GP = inject("GP");
-let data_local = reactive({ WASM: null });
+let WASM_Module = reactive({ WASM: null });
 let initWASM = async () => {
   return await import("../wasm/index.js");
 };
 onMounted(() => {
-  initWASM().then((wasm) => (data_local.WASM = wasm)); //注意这必须引入reactive，在main.js其实也可以，但是由于没有reactive，所以在更新之后，Provide的仍然是一个undefined
+  initWASM().then((wasm) => (WASM_Module.WASM = wasm)); //注意这必须引入reactive，在main.js其实也可以，但是由于没有reactive，所以在更新之后，Provide的仍然是一个undefined
 });
 let handleClick = () => {
   // let BaseVector = data_local.WASM.BaseVector;
@@ -25,8 +27,8 @@ let handleClick = () => {
   // test_array_5.mm(test_array_6);
   // test_array_5.data_string();
   // console.log(test_array_5.get_rows(), test_array_5.get_cols());
-  const { Vector, createVector } = data_local.WASM;
-  console.log(data_local.WASM);
+  const { Vector, createVector } = WASM_Module.WASM;
+  console.log(WASM_Module.WASM);
   let a = [
     [1, 2, 3],
     [4, 5, 6],
@@ -43,7 +45,7 @@ let handleClick = () => {
     console.log(a1.memoryArray()[i]);
   }
 };
-provide("WASM", data_local.WASM);
+provide("WASM_Module", WASM_Module);
 </script>
 
 <style lang="scss">

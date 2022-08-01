@@ -1,8 +1,8 @@
 import { BaseVector } from "geo-vector";
 import { memory } from "geo-vector/geo_vector_bg.wasm";
 
-export function createVector(inputData) {
-    let data = new Vector(inputData);
+export function createVector(array, rows, cols) {//rows->height, cols->width
+    const data = new Vector(array, rows, cols);
     return new Proxy(data, VectorHandler(data));
 }
 
@@ -26,9 +26,9 @@ export class Vector {
         let _rows = rows
         let _cols = cols
         let _data = data
-        if (typeof data == "number") {
+        if (typeof data[0] == "number") {
             _data = data.map((value) => { return Number(value) });
-        } else if (typeof data == "object") {
+        } else if (typeof data[0] == "object") {
             //TODO this is not enough to judge the type of data
             _rows = data.length
             _cols = data[0].length
@@ -39,11 +39,12 @@ export class Vector {
         this.cols = this.get_cols()
         this.rows = this.get_rows()
     }
+    //in this part, functions mostly get/set things from WASM
     memoryArray() {
         return new Float64Array(memory.buffer, this.get_ptr(), this.get_cols() * this.get_rows())
     }
     array() {
-        return Array.from(this.memory_Array())
+        return Array.from(this.memoryArray())
     }
     get_ptr() {
         return this.Data.get_ptr()
@@ -58,8 +59,18 @@ export class Vector {
     set(row, col, value) { this.Data.set(row, col, value) }
     get_index(index) { return this.Data.get_index(index) }
     set_index(index, value) { this.Data.set_index(index, value) }
-
-    update(){
+    conv2d(kernel, stride) {
+        this.Data.conv2d(kernel, stride)//kernel should reshape in one dimension
+        this.update
+    }
+    conv2d_array(kernel, stride) {//this whill return a 1-dimension array
+        return this.Data.conv2d_array(kernel, stride)
+    }
+    padding_once(padding_value) {
+        this.Data.padding(padding_value);
+        this.update()
+    }
+    update() {
         this.ptr = this.get_ptr()
         this.cols = this.get_cols()
         this.rows = this.get_rows()
@@ -73,12 +84,47 @@ export class Vector {
     add(vector) {
         this.Data.add(vector.Data)
     }
-    div(vector) { 
-        this.Data.div(vector.Data) 
+    div(vector) {
+        this.Data.div(vector.Data)
     }
     mm(vector) {
         this.Data.mm(vector.Data)
         this.Data.log_data_string()
     }
 
+    //TODO description
+    render_thumbnails(canvasID) {
+        let ratio = 1;
+        const thumbnails_size=100;//set this param according to the size of the canvas
+        if (this.rows > thumbnails_size || this.cols > thumbnails_size){
+            ratio = this.rows > this.cols ? Math.ceil(this.rows / thumbnails_size) : Math.ceil(this.cols / thumbnails_size)
+        }
+        let canvas = document.getElementById(canvasID)
+        let ctx = canvas.getContext('2d')
+
+        let date = Date.now()
+        let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render_thumbnails(ratio)), Math.ceil(this.cols / ratio), Math.ceil(this.rows / ratio), { colorSpace: "srgb" })
+        console.log(`${Date.now() - date}ms`);
+
+        ctx.putImageData(imageData, (thumbnails_size-Math.ceil(this.cols / ratio))/2, (thumbnails_size-Math.ceil(this.rows / ratio))/2)
+
+
+    }
+    render(canvasID) {
+        let canvas = document.getElementById(canvasID)
+        let ctx = canvas.getContext('2d')
+        ctx.clearRect(0,0,canvas.width,canvas.height)
+        canvas.width=this.cols
+        canvas.height=this.rows
+
+        let date = Date.now()
+        // let data = (this.array().map((value) => { return [value,value,value,255] })).flat()
+
+        // let imageData = new ImageData(Uint8ClampedArray.from(data), this.cols, this.rows,{colorSpace:"srgb"})
+        let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render()), this.cols, this.rows, { colorSpace: "srgb" })
+        console.log(`${Date.now() - date}ms`);
+        ctx.putImageData(imageData, 0, 0)
+
+
+    }
 }

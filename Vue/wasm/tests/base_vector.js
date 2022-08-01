@@ -16,14 +16,14 @@ export function arraytest_1() {
     //test_array1.mm(test_array2)
 
     //fixed data
-    let test_array_3 = BaseVector.new(2, 3, [1, 2, 3, 4, 5, 6]);
+    let test_array_3 = BaseVector.new(2, 3, [NaN, 2, 3, 4, 5, 6]);
     let test_array_4 = BaseVector.new(2, 3, [7, 8, 9, 10, 11, 12]);
     test_array_3.mul(test_array_4)
     test_array_3.log_data_string()
 
     //mm
     let test_array_5 = BaseVector.new(3, 2, [1, 2, 3, 4, 5, 6]);
-    let test_array_6 = BaseVector.new(2, 3, [7, 8, 9, 10, 11, 12]);
+    let test_array_6 = BaseVector.new(2, 3, [7, 8, 9, 10, NaN, 12]);
     test_array_5.mm(test_array_6)
     test_array_5.log_data_string()
 
@@ -59,4 +59,17 @@ export function array_function_calculation_test() {
     console.log(l.reduce((a,b)=>{return add(a,b)}).get_index(0))
     console.log(l.reduce((a,b)=>{return div(a,b)}).get_index(0))
     console.log(l.reduce((a,b)=>{return mul(a,b)}).get_index(0))
+}
+
+export function padding_conv2d_test(){
+    let _test_array1 = []
+    for (let i = 0; i < 360 * 360; i++) {
+        _test_array1.push(300 + i);
+    }
+    let test_array1 = BaseVector.new(50, 50, _test_array1)
+    test_array1.padding(0);
+    test_array1.conv2d([0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],1)
+    console.log(test_array1)
+
+
 }

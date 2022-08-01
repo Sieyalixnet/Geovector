@@ -8,6 +8,6 @@ export const cal = { add, sub, mul, div };
 
 
 //TEST
-import { arraytest_1, memory_test, array_function_calculation_test } from "./tests/base_vector";
-arraytest_1(); memory_test(); array_function_calculation_test();
+import { arraytest_1, memory_test, array_function_calculation_test,padding_conv2d_test } from "./tests/base_vector";
+arraytest_1(); memory_test(); array_function_calculation_test();padding_conv2d_test()
 
