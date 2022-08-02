@@ -33,6 +33,10 @@ export function createImageVector_CTX(ctx, width, height){
     let G = createVector(data.filter((_, index) => index % 4 == 1), height, width);
     let B = createVector(data.filter((_, index) => index % 4 == 2), height, width);
     let A = createVector(data.filter((_, index) => index % 4 == 3), height, width);
+    R.OptionalAttributes.name = `R_${Date.now()}`
+    G.OptionalAttributes.name = `G_${Date.now()}`
+    B.OptionalAttributes.name = `B_${Date.now()}`
+    A.OptionalAttributes.name = `A_${Date.now()}`
     let result = new ImageVector()
     result.set_List([R,G,B,A])
     return result

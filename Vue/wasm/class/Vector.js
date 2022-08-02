@@ -38,6 +38,7 @@ export class Vector {
         this.ptr = this.get_ptr()//these are static fields, so we need use update function to update them
         this.cols = this.get_cols()
         this.rows = this.get_rows()
+        this.OptionalAttributes={}
     }
     //in this part, functions mostly get/set things from WASM
     memoryArray() {

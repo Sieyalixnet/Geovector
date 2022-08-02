@@ -1,6 +1,6 @@
 <template>
   <!-- <canvas id="canvas"></canvas> -->
-  <button @click="input">upload</button>
+  <button @click="input">Browse You File!</button>
 </template>
 
 <script setup>
@@ -11,7 +11,7 @@ let input = () => {
   var __temp_InputElement__ = document.createElement("input");
   __temp_InputElement__.addEventListener("change", HandleChangeFile, false);
   __temp_InputElement__.type = "file";
-  __temp_InputElement__.accept = "image/*";
+  __temp_InputElement__.accept = "image/*,application/json",
   __temp_InputElement__.click();
 };
 
@@ -54,25 +54,10 @@ function renderCanvas(ImageSRC, name) {
 
 <style lang="scss" scoped>
 button {
+  border-radius: 0px !important;
   width: 100%;
-  height: 30px;
-  border: none;
-  background: rgba(127, 202, 136, 0.3);
-  animation: blinkBorder ease-in 2s infinite reverse;
+  height: 1.875rem;
+  margin: 0 0 1.25rem 0;
 }
 
-@keyframes blinkBorder {
-  0% {
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0);
-  }
-  50% {
-    box-shadow: 0 0 5px rgba(1, 155, 87, 0.8);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0);
-  }
-}
-button:hover {
-  cursor: pointer;
-}
 </style>

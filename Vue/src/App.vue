@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div id="AppContent">
     <TheHeader></TheHeader>
-    <button @click="handleClick">Click me</button>
+    <!-- <button @click="handleClick">Click me</button> -->
     <Imagefile></Imagefile>
     <TheFooter></TheFooter>
   </div>
@@ -55,4 +55,8 @@ provide("WASM_Module", WASM_Module);
   font-family: Avenir, Helvetica, Arial, sans-serif;
   color: #2c3e50;
 }
+</style>
+
+<style lang="scss" scoped>
+
 </style>

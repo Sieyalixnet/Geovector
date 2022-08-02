@@ -24,6 +24,9 @@ impl BaseVector {
             data,
         }
     }
+    pub fn clone_self(&self)->BaseVector {
+        return self.clone();
+    }
     pub fn log_data_string(&self) {
         let mut string = String::new();
         for i in 0..self.data.len() {
@@ -220,6 +223,21 @@ impl BaseVector {
         self.data = result;
     }
 
+    pub fn transpose(&mut self){
+        let origin_data = self.reshape(self.total_cols);
+        let mut result:Vec<Vec<f64>> = vec![];
+        for i in 0..origin_data[0].len(){
+            let mut temp:Vec<f64> = vec![];
+            for j in 0..origin_data.len(){
+                temp.push(origin_data[j][i]);
+            }
+            result.push(temp);
+        }
+        self.total_rows = result.len();
+        self.total_cols = result[0].len();
+        self.data = result.into_iter().flat_map(|x| x).collect();
+    }
+
     pub fn render(&self) -> Vec<u8> {
         //TODO need to calculate the real pixel value
         let mut result: Vec<u8> = Vec::new();
@@ -377,5 +395,15 @@ mod tests {
         let result = a.render_thumbnails(4);
         println!("lenth is {}", result.len());
         println!("{:?}",result);
+    }
+
+    #[test]
+    pub fn transpose_test(){
+        let mut a = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        a.transpose();
+        assert_eq!(a.total_cols, 2);
+        assert_eq!(a.total_rows, 3);
+        assert_eq!(a.get_data(), vec![1.0, 4.0, 2.0, 5.0, 3.0, 6.0]);
+        println!("{:?}", a.clone().reshape(a.total_cols));
     }
 }

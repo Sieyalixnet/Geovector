@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <div class="nav">
+    <!-- <div class="nav">
       <ul>
         <li><a to="/paleocal">PaleoCal</a></li>
         <p style="display: inline-block; font-size: 120%; user-select: none">
@@ -24,16 +24,18 @@
    
         <li><a to="/gallery">Photos Gallery</a></li>
       </ul>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <style lang="scss" scoped>
 .header {
-
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  background-color: #fff;
+  margin-bottom: 20px;
   .content {
     .title {
-      margin: 1.875rem 0 0.625rem 3.75rem;
+      margin: 0 0 10px 60px;
       a {
         font-size: 300%;
         display: block;

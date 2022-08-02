@@ -1,17 +1,20 @@
 <template>
-  <div id="fileContent">
-    <div>
-    <label>FileName</label>
-    <input type="text" v-model="props.file.name"/>
+  <div id="FileContent">
+    <div class="filename">
+      <label>FileName</label>
+      <input type="text" v-model="props.file.name" />
     </div>
     <div class="layers">
-      
       <div
         class="layer"
         v-for="(item, index) in props.file.ChannelList"
         :key="index"
       >
-      <Layer @renderMain="render_main(index)"   :layer="item" :canvansid="`${props.file.name}_${index}`"></Layer>
+        <Layer
+          @renderMain="render_main(index)"
+          :layer="item"
+          :canvansid="`${props.file.name}_${index}`"
+        ></Layer>
       </div>
     </div>
     <button @click="render_thumbnails_to_canvas()">Update Thumbnails</button>
@@ -27,33 +30,45 @@ const props = defineProps(["file"]);
 let render_thumbnails_to_canvas = () => {
   props.file.render_thumbnails_to_canvas();
 };
-onMounted(()=>{
+onMounted(() => {
   render_thumbnails_to_canvas();
-})
-let render_main=(index)=>{props.file.render_to_main_canvas(index)}
+});
+let render_main = (index) => {
+  props.file.render_to_main_canvas(index);
+};
 </script>
 
 <style lang="scss" scoped>
-#fileContent {
+#FileContent {
   min-width: 100%;
-      border: 1px solid rgba(0,90,40,0.5);
-    border-radius: 1.25rem;
-    h2{text-align: center;}
+  border: 1px solid rgba(0, 90, 40, 0.5);
+  border-radius: 1.25rem;
+  h2 {
+    text-align: center;
+  }
+  .filename {
+    margin-top:10px;
+    text-align: center;
+    label{margin-right:10px;font-size: larger;}
+    input{height:30px;font-size: medium;}
+  }
   .layers {
-    margin:1.25rem;
+    margin: 10px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    
-    .layer{
+
+    .layer {
       width: 100%;
       margin-top: 0.3125rem;
     }
-    .layer:first-child{
+    .layer:first-child {
       margin-top: 0;
     }
   }
-  button{ margin-right: 20px;}
+  button {
+    margin-right: 20px;
+  }
 }
 </style>

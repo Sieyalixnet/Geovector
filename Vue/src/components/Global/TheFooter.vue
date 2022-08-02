@@ -12,10 +12,11 @@
 <style lang="scss" scoped >
 
   .bottom {
+
     margin-top: 10px;
     background-image: linear-gradient(
       rgba(141, 246, 183, 0.4),
-      rgba(225, 254, 245, 0.8)
+      rgba(225, 254, 245, 1)
     );
     display: flex;
     justify-content: center;

@@ -1,8 +1,22 @@
 <template>
-  <div>
-    <input type="number" v-model="padding_value" />
-    <input type="number" v-model="times" />
+  <div id="paddingContent">
+        <div class="label_input_block block">
+      <label>Padding Value</label>
+      <input
+        type="number"
+        v-model="padding_value"
+      />
+    </div>
+        <div class="label_input_block block">
+      <label>Padding Times</label>
+      <input
+        type="number"
+        v-model="times"
+      />
+    </div>
+    <div>
     <button @click="exec_padding()">Padding!</button>
+    </div>
   </div>
 </template>
 
@@ -23,4 +37,23 @@ let exec_padding = () => {
 </script>
 
 <style lang="scss" scoped>
+#paddingContent{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  .block{
+    margin-left: 20px;
+
+  }
+  .label_input_block {
+    text-align: center;
+    label {
+      display: block;
+    }
+    input {
+      width: 100px;
+    }
+  }
+
+}
 </style>

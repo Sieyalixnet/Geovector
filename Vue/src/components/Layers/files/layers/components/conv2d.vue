@@ -1,16 +1,21 @@
 <template>
   <div class="conv2dContent">
-    <div class="kernel_size_block block">
+    <div class="label_input_block block">
       <label>Kernel Size</label>
-      <input
+      <inputValue
         type="number"
-        v-model="kernel.kernel_size"
+        v-model:value="kernel.kernel_size"
         @change="change_list()"
       />
     </div>
+    {{kernel.kernel_size}}
+    <div class="label_input_block block">
+      <label>Stride</label>
+      <input type="number" v-model="stride" />
+    </div>
     <div class="kernel_block block">
       <label>Kernel</label>
-      <div :style="`width:${kernel.kernel_size*23}px;`" class="kernel">
+      <div :style="`width:${kernel.kernel_size * 23}px;`" class="kernel">
         <span v-for="(_, index) in kernel.kernel_size_list" :key="index">
           <input
             type="text"
@@ -21,14 +26,16 @@
         </span>
       </div>
     </div>
-        <button @click="exec_conv2d()">conv2d!</button>
-    
+    <div>
+      <button @click="exec_conv2d()">conv2d!</button>
+    </div>
     <!-- {{ kernel }} -->
   </div>
 </template>
 
 <script setup>
 import { onMounted, reactive, ref } from "vue";
+import inputValue from "./components/inputValue.vue";
 const props = defineProps(["layer"]);
 
 let kernel = reactive({
@@ -36,10 +43,14 @@ let kernel = reactive({
   kernel_size_list: [],
   kernel: [],
 });
-
+let stride = ref(1);
 let exec_conv2d = () => {
   let kernel_final = kernel.kernel.map((x) => Number(x));
-  props.layer.conv2d(kernel_final, 1);
+  if (stride.value > 0) {
+    props.layer.conv2d(kernel_final, stride.value);
+  } else{
+    alert("Stride should > 0.")
+  }
 };
 
 let change_list = () => {
@@ -73,15 +84,11 @@ onMounted(() => {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  .block{
+  .block {
     margin-left: 20px;
-
   }
-  .kernel_size_block {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  .label_input_block {
+    text-align: center;
     label {
       display: block;
     }
