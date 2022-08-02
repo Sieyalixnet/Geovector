@@ -51,7 +51,7 @@ let zoom_reset = ()=>{
   let canvas = document.getElementById("main_canvas");
   if (canvas) {
     main_canvas_size.size=1
-    canvas.style = `transform: scale(${main_canvas_size.size},${main_canvas_size.size})`;
+    canvas.style = `transform: scale(${main_canvas_size.size},${main_canvas_size.size}) translate(0%,0%);`;
   } else {
     return;
   }
@@ -60,7 +60,6 @@ let zoom_add = (delta) => {
   let canvas = document.getElementById("main_canvas");
   if (canvas) {
         main_canvas_size.size += delta;
-    let translate_size = 1-main_canvas_size.size<=0?-(1-main_canvas_size.size)*0.5*100:(1-main_canvas_size.size)*0.5*100;
 
     canvas.style = `transform-origin:top left;transform: scale(${main_canvas_size.size},${main_canvas_size.size})`;
   } else {
