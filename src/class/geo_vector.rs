@@ -2,7 +2,7 @@ use crate::{
     log,
     tools::{
         self,
-        tools::{reshape, Timer},
+        tools::{reshape, Timer, reflect_to},
     },
 };
 use wasm_bindgen::prelude::*;
@@ -222,6 +222,26 @@ impl BaseVector {
         self.total_rows = result.len() / column_number;
         self.data = result;
     }
+    pub fn normalize(&mut self,normalize_type:&str){
+        let data = self.data.clone();
+        let mut result = Vec::new();
+        match normalize_type{
+            "min_max"=>{//fold like reduce
+                let min = data.iter().cloned().fold(std::f64::MAX,|a,b|a.min(b));
+                let max = data.iter().cloned().fold(std::f64::MIN,|a,b|a.max(b));
+                result = data.into_iter().map(|x| (x-min)/(max-min)).collect();
+            },
+            "z_score"=>{
+                let mean = data.iter().cloned().fold(0.0,|a,b|a+b)/data.len() as f64;
+                let std = data.iter().cloned().fold(0.0,|a,b|a+((b-mean)*(b-mean)))/data.len() as f64;
+                result = data.into_iter().map(|x| (x-mean)/(std.sqrt())).collect();
+            },
+            _=>{
+                result = data;
+            }
+        };
+        self.data=result;
+    }
 
     pub fn transpose(&mut self){
         let origin_data = self.reshape(self.total_cols);
@@ -238,18 +258,23 @@ impl BaseVector {
         self.data = result.into_iter().flat_map(|x| x).collect();
     }
 
-    pub fn render(&self) -> Vec<u8> {
+    pub fn render(&self,reflect:bool) -> Vec<u8> {
         //TODO need to calculate the real pixel value
         let mut result: Vec<u8> = Vec::new();
+
+        let data = if reflect{
+            reflect_to(self.data.clone(),0.0,255.0)} else {self.data.clone()};
+
+
         for i in 0..self.data.len() {
-            result.push((self.data[i]).round() as u8); //*255?
-            result.push((self.data[i]).round() as u8);
-            result.push((self.data[i]).round() as u8);
+            result.push((data[i]).round() as u8); //*255?
+            result.push((data[i]).round() as u8);
+            result.push((data[i]).round() as u8);
             result.push(255);
         }
         result
     }
-    pub fn render_thumbnails(&self, ratio: usize) -> Vec<u8> {
+    pub fn render_thumbnails(&self, ratio: usize,reflect:bool) -> Vec<u8> {
         //TODO need to calculate the real pixel value
         let temp = self.reshape(self.total_cols);
         let mut temp_rows: Vec<Vec<f64>> = vec![];
@@ -264,7 +289,10 @@ impl BaseVector {
                 temp_rows.push(new_row);
             }
         }
-        let temp_rows: Vec<f64> = temp_rows.into_iter().flat_map(|x| x).collect();
+        let mut temp_rows: Vec<f64> = temp_rows.into_iter().flat_map(|x| x).collect();
+        if reflect {
+            temp_rows = reflect_to(temp_rows, 0.0, 255.0);
+        }
         let mut result: Vec<u8> = Vec::new();
         for i in 0..temp_rows.len() {
             result.push((temp_rows[i]).round() as u8); //*255?
@@ -349,7 +377,7 @@ mod tests {
         let b = a.conv2d_array(kernel, 1);
         println!("{:?}", &b.len());
         println!("{:?}", &b);
-        let c = a.render();
+        let c = a.render(false);
         println!("{:?}", &c);
     }
 
@@ -392,7 +420,7 @@ mod tests {
             test_vec[i] = i as f64;
         }
         let a = BaseVector::new(10, 10, test_vec);
-        let result = a.render_thumbnails(4);
+        let result = a.render_thumbnails(4,false);
         println!("lenth is {}", result.len());
         println!("{:?}",result);
     }
@@ -405,5 +433,15 @@ mod tests {
         assert_eq!(a.total_rows, 3);
         assert_eq!(a.get_data(), vec![1.0, 4.0, 2.0, 5.0, 3.0, 6.0]);
         println!("{:?}", a.clone().reshape(a.total_cols));
+    }
+
+    #[test]
+    pub fn reflect_normalize_test(){
+        let mut a = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        let result = reflect_to(a.data.clone(),0.0, 255.0);
+        println!("{:?}",result);
+        a.normalize("min_max");
+        println!("{:?}",a.get_data());
+        assert_eq!(a.get_data().iter().fold(std::f64::MAX,|a,b|a.min(*b)),0.0);
     }
 }

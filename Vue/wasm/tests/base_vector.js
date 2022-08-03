@@ -36,6 +36,8 @@ export function memory_test() {
     test_array_5.mm(test_array_6)
     console.log({ memory })
     const vector = new Float64Array(memory.buffer, test_array_5.get_ptr(), test_array_5.get_cols() * test_array_5.get_rows());
+    console.log('max is', Math.max(...vector));
+    console.log('min is', Math.min(...vector));
     for (let i in vector) { console.log(vector[i]) }
     console.log({ vector, test_array_5 })
 

@@ -1,19 +1,14 @@
 <template>
   <div class="conv2dContent">
-    <div class="label_input_block block">
-      <label>Kernel Size</label>
-      <inputValue
+      <LabelInput
         type="number"
+        class="BlockMargin"
+        label="Kernel Size"
         v-model:value="kernel.kernel_size"
         @change="change_list()"
       />
-    </div>
-    {{kernel.kernel_size}}
-    <div class="label_input_block block">
-      <label>Stride</label>
-      <input type="number" v-model="stride" />
-    </div>
-    <div class="kernel_block block">
+    <LabelInput type="number" v-model:value="stride" label="Stride" class="BlockMargin"/>
+    <div class="kernel_block BlockMargin">
       <label>Kernel</label>
       <div :style="`width:${kernel.kernel_size * 23}px;`" class="kernel">
         <span v-for="(_, index) in kernel.kernel_size_list" :key="index">
@@ -27,7 +22,7 @@
       </div>
     </div>
     <div>
-      <button @click="exec_conv2d()">conv2d!</button>
+      <button style="padding:0.625rem;" class="BlockMargin" @click="exec_conv2d()">conv2d!</button>
     </div>
     <!-- {{ kernel }} -->
   </div>
@@ -35,7 +30,7 @@
 
 <script setup>
 import { onMounted, reactive, ref } from "vue";
-import inputValue from "./components/inputValue.vue";
+import LabelInput from "./components/LabelInput.vue";
 const props = defineProps(["layer"]);
 
 let kernel = reactive({
@@ -44,6 +39,7 @@ let kernel = reactive({
   kernel: [],
 });
 let stride = ref(1);
+
 let exec_conv2d = () => {
   let kernel_final = kernel.kernel.map((x) => Number(x));
   if (stride.value > 0) {
@@ -84,18 +80,8 @@ onMounted(() => {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  .block {
-    margin-left: 20px;
-  }
-  .label_input_block {
-    text-align: center;
-    label {
-      display: block;
-    }
-    input {
-      width: 100px;
-    }
-  }
+
+
   .kernel_block {
     max-width: 100px;
     max-height: 100px;

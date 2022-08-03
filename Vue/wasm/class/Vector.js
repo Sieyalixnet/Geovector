@@ -73,6 +73,9 @@ export class Vector {
         this.cols = this.get_cols()
         this.rows = this.get_rows()
     }
+    transpose(){
+        this.Data.transpose()
+    }
     mul(vector) {
         this.Data.mul(vector.Data)
     }
@@ -87,7 +90,6 @@ export class Vector {
     }
     mm(vector) {
         this.Data.mm(vector.Data)
-        this.Data.log_data_string()
     }
     padding(padding_value) {
         this.Data.padding(padding_value);
@@ -98,7 +100,7 @@ export class Vector {
         this.update()
     }
     //TODO description
-    render_thumbnails(canvasID) {
+    render_thumbnails(canvasID,reflect=true) {
         let ratio = 1;
         const thumbnails_size=100;//set this param according to the size of the canvas
         if (this.rows > thumbnails_size || this.cols > thumbnails_size){
@@ -108,14 +110,14 @@ export class Vector {
         let ctx = canvas.getContext('2d')
 
         let date = Date.now()
-        let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render_thumbnails(ratio)), Math.ceil(this.cols / ratio), Math.ceil(this.rows / ratio), { colorSpace: "srgb" })
+        let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render_thumbnails(ratio,reflect)), Math.ceil(this.cols / ratio), Math.ceil(this.rows / ratio), { colorSpace: "srgb" })
         console.log(`${Date.now() - date}ms`);
 
         ctx.putImageData(imageData, (thumbnails_size-Math.ceil(this.cols / ratio))/2, (thumbnails_size-Math.ceil(this.rows / ratio))/2)
 
 
     }
-    render(canvasID) {
+    render(canvasID,reflect=true) {
         let canvas = document.getElementById(canvasID)
         let ctx = canvas.getContext('2d')
         ctx.clearRect(0,0,canvas.width,canvas.height)
@@ -126,7 +128,7 @@ export class Vector {
         // let data = (this.array().map((value) => { return [value,value,value,255] })).flat()
 
         // let imageData = new ImageData(Uint8ClampedArray.from(data), this.cols, this.rows,{colorSpace:"srgb"})
-        let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render()), this.cols, this.rows, { colorSpace: "srgb" })
+        let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render(reflect)), this.cols, this.rows, { colorSpace: "srgb" })
         console.log(`${Date.now() - date}ms`);
         ctx.putImageData(imageData, 0, 0)
 

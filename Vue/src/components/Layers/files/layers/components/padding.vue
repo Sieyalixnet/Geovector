@@ -1,27 +1,16 @@
 <template>
   <div id="paddingContent">
-        <div class="label_input_block block">
-      <label>Padding Value</label>
-      <input
-        type="number"
-        v-model="padding_value"
-      />
-    </div>
-        <div class="label_input_block block">
-      <label>Padding Times</label>
-      <input
-        type="number"
-        v-model="times"
-      />
-    </div>
+        <LabelInput class="BlockMargin" label="Padding Value" v-model:value="padding_value" type="number"/>
+        <LabelInput class="BlockMargin" label="Padding Times" v-model:value="times" type="number"/>
     <div>
-    <button @click="exec_padding()">Padding!</button>
+    <button style="padding:0.625rem;" @click="exec_padding()" class="BlockMargin">Padding!</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
+import LabelInput from "./components/LabelInput.vue";
 const props = defineProps(["layer"]);
 let padding_value = ref(0);
 let times = ref(1);
@@ -37,14 +26,11 @@ let exec_padding = () => {
 </script>
 
 <style lang="scss" scoped>
-#paddingContent{
+#paddingContent {
   display: flex;
   flex-direction: row;
   align-items: center;
-  .block{
-    margin-left: 20px;
 
-  }
   .label_input_block {
     text-align: center;
     label {
@@ -54,6 +40,5 @@ let exec_padding = () => {
       width: 100px;
     }
   }
-
 }
 </style>

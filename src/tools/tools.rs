@@ -26,3 +26,13 @@ pub fn reshape(array1d:&Vec<f64>, shape_value: usize) -> Vec<Vec<f64>> {
     }
     result
 }
+
+    pub fn reflect_to(data:Vec<f64>,min_reflect:f64,max_reflect:f64)->Vec<f64>{
+        let data = data.clone();
+
+        let min = data.iter().cloned().fold(std::f64::MAX,|a,b|a.min(b));
+        let max = data.iter().cloned().fold(std::f64::MIN,|a,b|a.max(b));
+
+        let result = data.into_iter().map(|x| (x-min)/(max-min)).map(|x| x*(max_reflect+min_reflect)-min_reflect).collect();
+        return result;
+    }

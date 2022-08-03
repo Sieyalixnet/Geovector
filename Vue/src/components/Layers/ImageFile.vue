@@ -1,6 +1,5 @@
 <template>
   <div id="ImageFileContent">
-    {{ImageFileList.ALL_Channel_List}}
     <Upload></Upload>
   <div style="width:100%">
     <div
