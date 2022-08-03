@@ -23,7 +23,8 @@
       <Padding v-if="select_option == 'padding'" :layer="props.layer"></Padding>
       <conv2d v-if="select_option == 'conv2d'" :layer="props.layer"></conv2d>
       <transpose v-if="select_option == 'transpose'" :layer="props.layer"></transpose>
-      <caloperation v-if="select_option == 'cal_operation'"  :layer="props.layer"></caloperation>
+      <cal-operation v-if="select_option == 'cal_operation'"  :layer="props.layer"></cal-operation>
+      <cal-operation-value v-if="select_option == 'cal_operation_value'"  :layer="props.layer"></cal-operation-value>
     </div>
 
   </div>
@@ -35,8 +36,8 @@ import { computed, provide } from "@vue/runtime-core";
 import Padding from "./components/padding.vue";
 import conv2d from "./components/conv2d.vue";
 import transpose from "./components/transpose.vue";
-import caloperation from "./components/caloperation.vue"
-
+import CalOperation from "./components/CalculateOperation.vue"
+import CalOperationValue from "./components/CalculateOperationValue.vue"
 
 const props = defineProps(["layer", "canvansid","file"]);
 let select_option = ref("select a operation");
@@ -54,6 +55,10 @@ let operation = [
   {
     name: "Calculate",
     value: "cal_operation",
+  },
+  {
+    name: "Calculate_value",
+    value: "cal_operation_value",
   },
   {
     name:"Transpose",

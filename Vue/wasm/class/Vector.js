@@ -38,7 +38,7 @@ export class Vector {
         this.ptr = this.get_ptr()//these are static fields, so we need use update function to update them
         this.cols = this.get_cols()
         this.rows = this.get_rows()
-        this.OptionalAttributes={}
+        this.OptionalAttributes = {}
     }
     //in this part, functions mostly get/set things from WASM
     memoryArray() {
@@ -73,7 +73,7 @@ export class Vector {
         this.cols = this.get_cols()
         this.rows = this.get_rows()
     }
-    transpose(){
+    transpose() {
         this.Data.transpose()
     }
     mul(vector) {
@@ -88,6 +88,22 @@ export class Vector {
     div(vector) {
         this.Data.div(vector.Data)
     }
+    mul_value(value) {
+        this.Data.mul_value(value)
+    }
+    sub_value(value) {
+        this.Data.sub_value(value)
+    }
+
+    add_value(value) {
+        this.Data.add_value(value)
+    }
+
+    div_value(value) {
+        this.Data.div_value(value)
+    }
+
+
     mm(vector) {
         this.Data.mm(vector.Data)
     }
@@ -95,34 +111,34 @@ export class Vector {
         this.Data.padding(padding_value);
         this.update()
     }
-    padding_times(padding_value,times){
-        this.Data.padding_times(padding_value,times);
+    padding_times(padding_value, times) {
+        this.Data.padding_times(padding_value, times);
         this.update()
     }
     //TODO description
-    render_thumbnails(canvasID,reflect=true) {
+    render_thumbnails(canvasID, reflect = true) {
         let ratio = 1;
-        const thumbnails_size=100;//set this param according to the size of the canvas
-        if (this.rows > thumbnails_size || this.cols > thumbnails_size){
+        const thumbnails_size = 100;//set this param according to the size of the canvas
+        if (this.rows > thumbnails_size || this.cols > thumbnails_size) {
             ratio = this.rows > this.cols ? Math.ceil(this.rows / thumbnails_size) : Math.ceil(this.cols / thumbnails_size)
         }
         let canvas = document.getElementById(canvasID)
         let ctx = canvas.getContext('2d')
 
         let date = Date.now()
-        let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render_thumbnails(ratio,reflect)), Math.ceil(this.cols / ratio), Math.ceil(this.rows / ratio), { colorSpace: "srgb" })
+        let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render_thumbnails(ratio, reflect)), Math.ceil(this.cols / ratio), Math.ceil(this.rows / ratio), { colorSpace: "srgb" })
         console.log(`${Date.now() - date}ms`);
 
-        ctx.putImageData(imageData, (thumbnails_size-Math.ceil(this.cols / ratio))/2, (thumbnails_size-Math.ceil(this.rows / ratio))/2)
+        ctx.putImageData(imageData, (thumbnails_size - Math.ceil(this.cols / ratio)) / 2, (thumbnails_size - Math.ceil(this.rows / ratio)) / 2)
 
 
     }
-    render(canvasID,reflect=true) {
+    render(canvasID, reflect = true) {
         let canvas = document.getElementById(canvasID)
         let ctx = canvas.getContext('2d')
-        ctx.clearRect(0,0,canvas.width,canvas.height)
-        canvas.width=this.cols
-        canvas.height=this.rows
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        canvas.width = this.cols
+        canvas.height = this.rows
 
         let date = Date.now()
         // let data = (this.array().map((value) => { return [value,value,value,255] })).flat()

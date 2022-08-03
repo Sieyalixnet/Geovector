@@ -2,7 +2,7 @@ use crate::{
     log,
     tools::{
         self,
-        tools::{reshape, Timer, reflect_to},
+        tools::{reflect_to, reshape, Timer},
     },
 };
 use wasm_bindgen::prelude::*;
@@ -24,7 +24,7 @@ impl BaseVector {
             data,
         }
     }
-    pub fn clone_self(&self)->BaseVector {
+    pub fn clone_self(&self) -> BaseVector {
         return self.clone();
     }
     pub fn log_data_string(&self) {
@@ -49,7 +49,7 @@ impl BaseVector {
     //     return a;
     // }
 
-    //Some getter and Setter
+    //PARTS: Some getter and Setter
     pub fn set(&mut self, rows: usize, cols: usize, set_data: f64) {
         let position = rows * self.total_cols + cols;
         self.data[position] = set_data;
@@ -81,7 +81,7 @@ impl BaseVector {
         self.total_rows
     }
 
-    //matrix operation
+    //PARTS: matrix operation
     //in this part, if some operation will change the shape of the matrix, we should also modify the total_rows and total_cols manually.
     pub fn mul(&mut self, b: &BaseVector) {
         self.data = self
@@ -131,6 +131,28 @@ impl BaseVector {
         self.total_cols = c[0].len();
         self.data = c.into_iter().flat_map(|x| x).collect();
     }
+
+    pub fn add_value(&mut self, b: f64) {
+        for i in 0..self.data.len() {
+            self.data[i] += b;
+        }
+    }
+    pub fn sub_value(&mut self, b: f64) {
+        for i in 0..self.data.len() {
+            self.data[i] -= b;
+        }
+    }
+    pub fn mul_value(&mut self, b: f64) {
+        for i in 0..self.data.len() {
+            self.data[i] *= b;
+        }
+    }
+    pub fn div_value(&mut self, b: f64) {
+        for i in 0..self.data.len() {
+            self.data[i] /= b;
+        }
+    }
+    //PARTS: matrix/science calculate
     pub fn padding(&mut self, padding_value: f64) {
         let mut new_data = self.reshape(self.total_cols);
         for row in &mut new_data {
@@ -146,18 +168,20 @@ impl BaseVector {
         self.total_cols = new_data[0].len();
         self.data = new_data.into_iter().flat_map(|x| x).collect();
     }
-    pub fn padding_times(&mut self, padding_value: f64,times:usize) {
+    pub fn padding_times(&mut self, padding_value: f64, times: usize) {
         let mut new_data = self.reshape(self.total_cols);
         for row in &mut new_data {
-            for i in 0..times{
-            row.push(padding_value);
-            row.insert(0, padding_value);}
+            for i in 0..times {
+                row.push(padding_value);
+                row.insert(0, padding_value);
+            }
         }
         let new_length = new_data[0].len();
         let padding_row = vec![padding_value; new_length];
-        for i in 0..times{
-        new_data.insert(0, padding_row.clone());
-        new_data.push(padding_row.clone());}
+        for i in 0..times {
+            new_data.insert(0, padding_row.clone());
+            new_data.push(padding_row.clone());
+        }
 
         self.total_rows = new_data.len();
         self.total_cols = new_data[0].len();
@@ -222,33 +246,41 @@ impl BaseVector {
         self.total_rows = result.len() / column_number;
         self.data = result;
     }
-    pub fn normalize(&mut self,normalize_type:&str){
+    pub fn normalize(&mut self, normalize_type: &str) {
         let data = self.data.clone();
         let mut result = Vec::new();
-        match normalize_type{
-            "min_max"=>{//fold like reduce
-                let min = data.iter().cloned().fold(std::f64::MAX,|a,b|a.min(b));
-                let max = data.iter().cloned().fold(std::f64::MIN,|a,b|a.max(b));
-                result = data.into_iter().map(|x| (x-min)/(max-min)).collect();
-            },
-            "z_score"=>{
-                let mean = data.iter().cloned().fold(0.0,|a,b|a+b)/data.len() as f64;
-                let std = data.iter().cloned().fold(0.0,|a,b|a+((b-mean)*(b-mean)))/data.len() as f64;
-                result = data.into_iter().map(|x| (x-mean)/(std.sqrt())).collect();
-            },
-            _=>{
+        match normalize_type {
+            "min_max" => {
+                //fold like reduce
+                let min = data.iter().cloned().fold(std::f64::MAX, |a, b| a.min(b));
+                let max = data.iter().cloned().fold(std::f64::MIN, |a, b| a.max(b));
+                result = data.into_iter().map(|x| (x - min) / (max - min)).collect();
+            }
+            "z_score" => {
+                let mean = data.iter().cloned().fold(0.0, |a, b| a + b) / data.len() as f64;
+                let std = data
+                    .iter()
+                    .cloned()
+                    .fold(0.0, |a, b| a + ((b - mean) * (b - mean)))
+                    / data.len() as f64;
+                result = data
+                    .into_iter()
+                    .map(|x| (x - mean) / (std.sqrt()))
+                    .collect();
+            }
+            _ => {
                 result = data;
             }
         };
-        self.data=result;
+        self.data = result;
     }
 
-    pub fn transpose(&mut self){
+    pub fn transpose(&mut self) {
         let origin_data = self.reshape(self.total_cols);
-        let mut result:Vec<Vec<f64>> = vec![];
-        for i in 0..origin_data[0].len(){
-            let mut temp:Vec<f64> = vec![];
-            for j in 0..origin_data.len(){
+        let mut result: Vec<Vec<f64>> = vec![];
+        for i in 0..origin_data[0].len() {
+            let mut temp: Vec<f64> = vec![];
+            for j in 0..origin_data.len() {
                 temp.push(origin_data[j][i]);
             }
             result.push(temp);
@@ -258,13 +290,16 @@ impl BaseVector {
         self.data = result.into_iter().flat_map(|x| x).collect();
     }
 
-    pub fn render(&self,reflect:bool) -> Vec<u8> {
+    //PARTS: Outputs
+    pub fn render(&self, reflect: bool) -> Vec<u8> {
         //TODO need to calculate the real pixel value
         let mut result: Vec<u8> = Vec::new();
 
-        let data = if reflect{
-            reflect_to(self.data.clone(),0.0,255.0)} else {self.data.clone()};
-
+        let data = if reflect {
+            reflect_to(self.data.clone(), 0.0, 255.0)
+        } else {
+            self.data.clone()
+        };
 
         for i in 0..self.data.len() {
             result.push((data[i]).round() as u8); //*255?
@@ -274,7 +309,7 @@ impl BaseVector {
         }
         result
     }
-    pub fn render_thumbnails(&self, ratio: usize,reflect:bool) -> Vec<u8> {
+    pub fn render_thumbnails(&self, ratio: usize, reflect: bool) -> Vec<u8> {
         //TODO need to calculate the real pixel value
         let temp = self.reshape(self.total_cols);
         let mut temp_rows: Vec<Vec<f64>> = vec![];
@@ -363,6 +398,7 @@ impl BaseVector {
     }
 }
 
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -420,13 +456,13 @@ mod tests {
             test_vec[i] = i as f64;
         }
         let a = BaseVector::new(10, 10, test_vec);
-        let result = a.render_thumbnails(4,false);
+        let result = a.render_thumbnails(4, false);
         println!("lenth is {}", result.len());
-        println!("{:?}",result);
+        println!("{:?}", result);
     }
 
     #[test]
-    pub fn transpose_test(){
+    pub fn transpose_test() {
         let mut a = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
         a.transpose();
         assert_eq!(a.total_cols, 2);
@@ -436,12 +472,29 @@ mod tests {
     }
 
     #[test]
-    pub fn reflect_normalize_test(){
+    pub fn reflect_normalize_test() {
         let mut a = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
-        let result = reflect_to(a.data.clone(),0.0, 255.0);
-        println!("{:?}",result);
+        let result = reflect_to(a.data.clone(), 0.0, 255.0);
+        println!("{:?}", result);
         a.normalize("min_max");
-        println!("{:?}",a.get_data());
-        assert_eq!(a.get_data().iter().fold(std::f64::MAX,|a,b|a.min(*b)),0.0);
+        println!("{:?}", a.get_data());
+        assert_eq!(
+            a.get_data().iter().fold(std::f64::MAX, |a, b| a.min(*b)),
+            0.0
+        );
+    }
+
+    #[test]
+    pub fn calculate_value_test(){
+        let mut a = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        a.add_value(1.0);
+        assert_eq!(a.get_data(), vec![2.0, 3.0, 4.0, 5.0, 6.0, 7.0]);
+        a.sub_value(1.0);
+        assert_eq!(a.get_data(), vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        a.mul_value(2.0);
+        assert_eq!(a.get_data(), vec![2.0, 4.0, 6.0, 8.0, 10.0, 12.0]);
+        a.div_value(2.0);
+        assert_eq!(a.get_data(), vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+
     }
 }

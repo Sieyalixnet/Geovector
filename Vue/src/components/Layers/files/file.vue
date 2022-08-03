@@ -42,7 +42,7 @@ let render_main = (index) => {
 #FileContent {
   min-width: 100%;
   border: 1px solid rgba(0, 90, 40, 0.5);
-  border-radius: 1.25rem;
+  border-radius: 0.3125rem;
   h2 {
     text-align: center;
   }

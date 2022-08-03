@@ -64,9 +64,6 @@ let exec_calculate=()=>{
 
 }
 
-let test = () => {
-
-};
 </script>
 
 <style lang="scss" scoped>
