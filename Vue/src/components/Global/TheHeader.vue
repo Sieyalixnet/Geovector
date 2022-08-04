@@ -42,6 +42,10 @@
         cursor: pointer;
         color: rgb(0, 106, 42);
       }
+      @media screen and (orientation: portrait) {
+        margin: 0 0 0 0;
+        text-align: center;
+      }
     }
   }
   .nav {

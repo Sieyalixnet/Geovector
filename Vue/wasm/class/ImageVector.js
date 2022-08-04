@@ -8,6 +8,7 @@ export class ImageVector{
     }
     set_List(VectorList){this.ChannelList=VectorList}
     add_List(Vector){this.ChannelList.push(Vector)}
+    get_Vector(index){return this.ChannelList[index]}
     set_name(name){this.name=name}
     render_to_main_canvas(index){
         this.ChannelList[index].render(`main_canvas`)
@@ -23,6 +24,27 @@ export class ImageVector{
             console.log(`${this.name}_${index}`)
             this.ChannelList[index].render_thumbnails(`${this.name}_${index}`)
         }
+    }
+    delete(index){
+        this.ChannelList.splice(index,1)
+        console.log(this.ChannelList)
+    }
+    upward(index){
+        let temp = this.ChannelList[index]
+        this.ChannelList[index]=this.ChannelList[index-1]
+        this.ChannelList[index-1]=temp
+    }
+    downward(index){
+        let temp = this.ChannelList[index]
+        this.ChannelList[index]=this.ChannelList[index+1]
+        this.ChannelList[index+1]=temp
+    }
+    copy(index){
+
+        let temp = createVector(this.ChannelList[index].array(),this.ChannelList[index].get_rows(),this.ChannelList[index].get_cols())
+        temp.OptionalAttributes.name= `${this.ChannelList[index].OptionalAttributes.name}_copy`
+        this.ChannelList.push(temp)
+
     }
 }
 

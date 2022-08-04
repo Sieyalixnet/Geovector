@@ -11,6 +11,7 @@
       :list="ALL_Channel_List"
       :label="operation"
       class="BlockMargin"
+      v-show="operation != 'Transpose'"
     ></LabelLayerSelector>
 
     <div>
@@ -19,10 +20,9 @@
         @click="exec_calculate()"
         class="BlockMargin"
       >
-        M
+        {{ operation }}
       </button>
     </div>
-    <button @click="test()">test</button>
   </div>
 </template>
 
@@ -33,18 +33,30 @@ import LabelLayerSelector from "./components/LabelLayerSelector.vue";
 const props = defineProps(["layer"]);
 let ImageFileList = inject("ImageFileList");
 const { ALL_Channel_List } = ImageFileList;
-let selectedMatrixName = ref();
+let selectedMatrixName = ref("");
 let operation = ref("Select an operation");
-let operations=["Add","Sub","Mul","Div","MM"];
+let operations = ["Add", "Sub", "Mul", "Div", "MM", "Transpose"];
 
-let exec_calculate=()=>{
-  let selected_martix=  ALL_Channel_List.find((item) => {
-    if (item.OptionalAttributes.name == selectedMatrixName.value) {
-      return item
-    }
-  });
+let exec_calculate = () => {
+  if (props.layer.OptionalAttributes.name == selectedMatrixName.value) {
+    alert(
+      "Please select a different layer. For example, you can use mul instead of adding the same layer."
+    );
+    return;
+  }
 
-  switch(operation.value){
+  let selected_martix;
+  if (operation.value != "Transpose"){
+    selected_martix = ALL_Channel_List.find((item) => {
+      if (item.OptionalAttributes.name == selectedMatrixName.value) {
+        return item;
+      }
+    });
+  if (!selected_martix || !operations.includes(operation.value)) {
+    alert("Please select an operation and a matrix");
+    return;
+  }}
+  switch (operation.value) {
     case "Add":
       props.layer.add(selected_martix);
       break;
@@ -60,10 +72,11 @@ let exec_calculate=()=>{
     case "MM":
       props.layer.mm(selected_martix);
       break;
+    case "Transpose":
+      props.layer.transpose();
+      break;
   }
-
-}
-
+};
 </script>
 
 <style lang="scss" scoped>

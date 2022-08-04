@@ -75,6 +75,7 @@ export class Vector {
     }
     transpose() {
         this.Data.transpose()
+        this.update()
     }
     mul(vector) {
         this.Data.mul(vector.Data)
@@ -124,7 +125,7 @@ export class Vector {
         }
         let canvas = document.getElementById(canvasID)
         let ctx = canvas.getContext('2d')
-
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
         let date = Date.now()
         let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render_thumbnails(ratio, reflect)), Math.ceil(this.cols / ratio), Math.ceil(this.rows / ratio), { colorSpace: "srgb" })
         console.log(`${Date.now() - date}ms`);
@@ -136,6 +137,7 @@ export class Vector {
     render(canvasID, reflect = true) {
         let canvas = document.getElementById(canvasID)
         let ctx = canvas.getContext('2d')
+
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         canvas.width = this.cols
         canvas.height = this.rows

@@ -12,6 +12,7 @@
         class="BlockMargin"
         label="Value"
         v-model:value="calculate_value"
+
       />
 
     <div>
@@ -20,7 +21,7 @@
         @click="exec_calculate()"
         class="BlockMargin"
       >
-        M
+        {{operation}}
       </button>
     </div>
   </div>
@@ -36,8 +37,10 @@ let operation = ref("Select an operation");
 let operations=["Add","Sub","Mul","Div"];
 
 let exec_calculate=()=>{
-
-
+  if(!Number(calculate_value.value)){
+    alert("Please input a number");
+    return;
+  }
   switch(operation.value){
     case "Add":
       props.layer.add_value(calculate_value.value);
@@ -51,6 +54,7 @@ let exec_calculate=()=>{
     case "Div":
       props.layer.div_value(calculate_value.value);
       break;
+
   }
 }
 

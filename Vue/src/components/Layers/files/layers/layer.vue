@@ -1,6 +1,6 @@
 <template>
-  <div class="layerContent">
-    <div class="canvas_block" @click="$emit('renderMain')">
+  <div class="layerContent" :class="`${layer.OptionalAttributes.name[0]}_layer`">
+    <div class="canvas_block" @click="$emit('renderMain', props.LayerIndex)">
       <canvas height="100" width="100" :id="props.canvansid"></canvas>
     </div>
     <div class="layerTitle">
@@ -22,9 +22,9 @@
     <div class="operation_component">
       <Padding v-if="select_option == 'padding'" :layer="props.layer"></Padding>
       <conv2d v-if="select_option == 'conv2d'" :layer="props.layer"></conv2d>
-      <transpose v-if="select_option == 'transpose'" :layer="props.layer"></transpose>
       <cal-operation v-if="select_option == 'cal_operation'"  :layer="props.layer"></cal-operation>
       <cal-operation-value v-if="select_option == 'cal_operation_value'"  :layer="props.layer"></cal-operation-value>
+      <layer-operation v-if="select_option == 'layer_operation'"  :layer="props.layer" @LayerOperation_exec="LayerOperation_exec"></layer-operation>
     </div>
 
   </div>
@@ -35,14 +35,17 @@ import { reactive, ref } from "@vue/reactivity";
 import { computed, provide } from "@vue/runtime-core";
 import Padding from "./components/padding.vue";
 import conv2d from "./components/conv2d.vue";
-import transpose from "./components/transpose.vue";
 import CalOperation from "./components/CalculateOperation.vue"
 import CalOperationValue from "./components/CalculateOperationValue.vue"
-
-const props = defineProps(["layer", "canvansid","file"]);
+import LayerOperation from "./components/LayerOperation.vue";
+const props = defineProps(["layer", "canvansid","file","LayerIndex"]);
 let select_option = ref("select a operation");
-const emits = defineEmits(["renderMain"]);
+const emits = defineEmits(["renderMain","LayerOperation_exec"]);
+let LayerOperation_exec=(option)=>{
+  select_option.value="select a operation"
+  emits("LayerOperation_exec",option,props.LayerIndex);
 
+}
 let operation = [
   {
     name: "Padding",
@@ -57,13 +60,14 @@ let operation = [
     value: "cal_operation",
   },
   {
-    name: "Calculate_value",
+    name: "Calculate(Value)",
     value: "cal_operation_value",
   },
   {
-    name:"Transpose",
-    value:"transpose",
-  }
+    name: "Layer Operation",
+    value: "layer_operation",
+  },
+
 ];
 </script>
 
@@ -107,7 +111,18 @@ let operation = [
     align-items: center;
   }
 }
-
+.R_layer{
+  background-color: rgba(255,200,200,0.2);
+}
+.G_layer{
+  background-color: rgba(191, 255, 170, 0.2);
+}
+.B_layer{
+  background-color: rgba(162, 161, 255, 0.2);
+}
+.A_layer{
+  background-color: rgba(207, 248, 255, 0.2);
+}
 </style>
 
 <style lang="scss">

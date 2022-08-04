@@ -1,5 +1,6 @@
 <template>
   <div id="ImageFileContent">
+    {{ImageFileList.List}}
     <Upload></Upload>
   <div style="width:100%">
     <div
@@ -28,8 +29,8 @@
 <script setup>
 import { reactive } from "@vue/reactivity";
 import { computed, provide, watch } from "@vue/runtime-core";
-import Upload from "./components/upload.vue";
-import File from "./files/file.vue";
+import Upload from "./components/Upload.vue";
+import File from "./files/File.vue";
 let ImageFileList = reactive({ List: [],ALL_Channel_List:[] });
 // let main_canvas_div_height = computed(()=>{
 //   let canvas_div = document.getElementById("main_canvas_div");
@@ -102,6 +103,10 @@ provide("ImageFileList", ImageFileList);
       border-radius: 0px;
       border-top: 0;
     }
+    button:nth-child(2) {
+      border-left: 0;
+      border-right: 0;
+    }
     margin-bottom: 1.25rem;
   }
 }
@@ -148,5 +153,20 @@ provide("ImageFileList", ImageFileList);
       box-shadow: 0 0 5px rgba(0, 0, 0, 0);
     }
   }
+}
+
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.4s cubic-bezier(0.5, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
 }
 </style>
