@@ -10,6 +10,7 @@ function VectorHandler(target) {
     return {
         get(target, key) {
             let res = Reflect.get(target, key);
+            // console.log(target.OptionalAttributes)
             console.log('get')
             return res
         },
@@ -124,6 +125,7 @@ export class Vector {
             ratio = this.rows > this.cols ? Math.ceil(this.rows / thumbnails_size) : Math.ceil(this.cols / thumbnails_size)
         }
         let canvas = document.getElementById(canvasID)
+        if(!canvas){return;}
         let ctx = canvas.getContext('2d')
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         let date = Date.now()
@@ -136,6 +138,7 @@ export class Vector {
     }
     render(canvasID, reflect = true) {
         let canvas = document.getElementById(canvasID)
+        if(!canvas){return;}
         let ctx = canvas.getContext('2d')
 
         ctx.clearRect(0, 0, canvas.width, canvas.height)

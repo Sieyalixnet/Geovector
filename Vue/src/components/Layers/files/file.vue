@@ -21,22 +21,33 @@
         </div>
       </div>
     </Transition>
-    <button @click="render_thumbnails_to_canvas()">Update Thumbnails</button>
+    <div>
+      <input type="checkbox" v-model="auto_render_thumbails" /><label
+        >Auto Update Thumbails</label
+      >
+    </div>
+    <button
+      v-if="!auto_render_thumbails"
+      @click="render_thumbnails_to_canvas()"
+    >
+      Update Thumbnails
+    </button>
   </div>
 </template>
 
 <script setup>
 import { reactive, ref } from "@vue/reactivity";
-import { onMounted, provide,inject } from "@vue/runtime-core";
+import { onMounted, provide, inject } from "@vue/runtime-core";
 import Layer from "./layers/Layer.vue";
 const props = defineProps(["file"]);
 let ImageFileList = inject("ImageFileList");
 const { List } = ImageFileList;
 let showLayers = ref(true);
+let auto_render_thumbails = ref(true);
 
 let exec_operation = (option, index) => {
-  const {operation,SelectedFile} = option;
-  console.log(operation, SelectedFile,index);
+  //exec_operation for LayerOperation
+  const { operation, SelectedFile } = option;
   switch (operation) {
     case "Copy":
       props.file.copy(index);
@@ -51,11 +62,16 @@ let exec_operation = (option, index) => {
       props.file.delete(index);
       break;
     case "Move To":
-      console.log(SelectedFile);
-      console.log(List.find(item => item.name === SelectedFile))
-      List.find(item => item.name === SelectedFile).add_List(props.file.get_Vector(index));
+      //console.log(SelectedFile);
+      //console.log(List.find(item => item.name === SelectedFile))
+      List.find((item) => item.name === SelectedFile).add_List(
+        props.file.get_Vector(index)
+      );
       props.file.delete(index);
       break;
+  }
+  if (auto_render_thumbails.value) {
+    render_thumbnails_to_canvas();
   }
 };
 
@@ -65,6 +81,11 @@ let render_thumbnails_to_canvas = () => {
 onMounted(() => {
   render_thumbnails_to_canvas();
 });
+provide("update_thumbnails", {
+  fn: render_thumbnails_to_canvas,
+  if: auto_render_thumbails.value,
+});
+
 let render_main = (index) => {
   props.file.render_to_main_canvas(index);
 };

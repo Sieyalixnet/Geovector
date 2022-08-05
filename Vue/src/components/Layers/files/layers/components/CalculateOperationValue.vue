@@ -35,7 +35,7 @@ const props = defineProps(["layer"]);
 let calculate_value = ref(1);
 let operation = ref("Select an operation");
 let operations=["Add","Sub","Mul","Div"];
-
+const update_thumbnails=inject("update_thumbnails");
 let exec_calculate=()=>{
   if(!Number(calculate_value.value)){
     alert("Please input a number");
@@ -56,6 +56,9 @@ let exec_calculate=()=>{
       break;
 
   }
+      if(update_thumbnails.if){
+      update_thumbnails.fn()
+    }
 }
 
 

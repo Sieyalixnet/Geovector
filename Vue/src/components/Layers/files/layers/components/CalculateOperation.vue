@@ -32,6 +32,7 @@ import LabelSelector from "./components/LabelSelector.vue";
 import LabelLayerSelector from "./components/LabelLayerSelector.vue";
 const props = defineProps(["layer"]);
 let ImageFileList = inject("ImageFileList");
+const update_thumbnails=inject("update_thumbnails");
 const { ALL_Channel_List } = ImageFileList;
 let selectedMatrixName = ref("");
 let operation = ref("Select an operation");
@@ -40,7 +41,7 @@ let operations = ["Add", "Sub", "Mul", "Div", "MM", "Transpose"];
 let exec_calculate = () => {
   if (props.layer.OptionalAttributes.name == selectedMatrixName.value) {
     alert(
-      "Please select a different layer. For example, you can use mul instead of adding the same layer."
+      "Can not calculate with the same layer. Please select a different layer (you can firstly use Layer Operation to copy it). "
     );
     return;
   }
@@ -76,6 +77,9 @@ let exec_calculate = () => {
       props.layer.transpose();
       break;
   }
+      if(update_thumbnails.if){
+      update_thumbnails.fn()
+    }
 };
 </script>
 

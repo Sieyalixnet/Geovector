@@ -1,21 +1,26 @@
 <template>
   <div id="ImageFileContent">
-    {{ImageFileList.List}}
+    {{ ImageFileList.List }}
     <Upload></Upload>
-  <div style="width:100%">
-    <div
-      :style="
-        ImageFileList.List.length > 0 ? 'overflow: scroll' : 'overflow:none'
-      "
-      id="main_canvas_div"
-    >
-      <canvas id="main_canvas"></canvas>
+    <div style="width: 100%">
+      <div
+        :style="
+          ImageFileList.List.length > 0 ? 'overflow: scroll' : 'overflow:none'
+        "
+        id="main_canvas_div"
+      >
+        <canvas id="main_canvas"></canvas>
+      </div>
+
+      <div id="transform_div">
+        <button @click="zoom_add(0.1)">+</button
+        ><button @click="zoom_add(-0.1)">-</button
+        ><button @click="zoom_reset()">
+          Zoom: {{ Math.round(main_canvas_size.size * 10) / 10 }}
+        </button>
+      </div>
     </div>
-    
-    <div id="transform_div">
-      <button @click="zoom_add(0.1)">+</button><button @click="zoom_add(-0.1)">-</button><button @click="zoom_reset()">Zoom: {{Math.round(main_canvas_size.size*10)/10}}</button>
-    </div>
-    </div>
+    <div id="ImageFileContentFileOperation"><file-operation></file-operation></div>
     <div
       id="ImageFileContentFile"
       v-for="(item, index) in ImageFileList.List"
@@ -31,35 +36,41 @@ import { reactive } from "@vue/reactivity";
 import { computed, provide, watch } from "@vue/runtime-core";
 import Upload from "./components/Upload.vue";
 import File from "./files/File.vue";
-let ImageFileList = reactive({ List: [],ALL_Channel_List:[] });
+import FileOperation from "./files/FileOperation.vue";
+let ImageFileList = reactive({ List: [], ALL_Channel_List: [] });
 // let main_canvas_div_height = computed(()=>{
 //   let canvas_div = document.getElementById("main_canvas_div");
 //   let width = canvas_div.style.width
 //   return 0.5*width;
 // })
-let main_canvas_size=reactive({
-  size:1,
-})
+let main_canvas_size = reactive({
+  size: 1,
+});
 
-watch(()=>ImageFileList.List,(newValue)=>{
-  ImageFileList.ALL_Channel_List=[];
-  for(let file of ImageFileList.List){//reactive's List
-    ImageFileList.ALL_Channel_List.push(...file.ChannelList)//every ImageVector's ChannelList
-  }
-},{deep:true})
-let zoom_reset = ()=>{
+watch(
+  () => ImageFileList.List,
+  (newValue) => {
+    ImageFileList.ALL_Channel_List = [];
+    for (let file of ImageFileList.List) {
+      //reactive's List
+      ImageFileList.ALL_Channel_List.push(...file.ChannelList); //every ImageVector's ChannelList
+    }
+  },
+  { deep: true }
+);
+let zoom_reset = () => {
   let canvas = document.getElementById("main_canvas");
   if (canvas) {
-    main_canvas_size.size=1
+    main_canvas_size.size = 1;
     canvas.style = `transform: scale(${main_canvas_size.size},${main_canvas_size.size}) translate(0%,0%);`;
   } else {
     return;
   }
-}
+};
 let zoom_add = (delta) => {
   let canvas = document.getElementById("main_canvas");
   if (canvas) {
-        main_canvas_size.size += delta;
+    main_canvas_size.size += delta;
 
     canvas.style = `transform-origin:top left;transform: scale(${main_canvas_size.size},${main_canvas_size.size})`;
   } else {
@@ -77,7 +88,7 @@ provide("ImageFileList", ImageFileList);
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  #ImageFileContentFile {
+  #ImageFileContentFile,#ImageFileContentFileOperation {
     width: 100%;
   }
   #main_canvas_div {
@@ -155,7 +166,6 @@ provide("ImageFileList", ImageFileList);
   }
 }
 
-
 .slide-fade-enter-active {
   transition: all 0.3s ease-out;
 }
@@ -167,6 +177,15 @@ provide("ImageFileList", ImageFileList);
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   transform: translateX(20px);
+  opacity: 0;
+}
+
+.fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

@@ -8,6 +8,8 @@
         @change="change_list()"
       />
     <LabelInput type="number" v-model:value="stride" label="Stride" class="BlockMargin"/>
+
+
     <div class="kernel_block BlockMargin">
       <label>Kernel</label>
       <div :style="`width:${kernel.kernel_size * 23}px;`" class="kernel">
@@ -29,10 +31,10 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref,inject } from "vue";
 import LabelInput from "./components/LabelInput.vue";
 const props = defineProps(["layer"]);
-
+const update_thumbnails=inject("update_thumbnails");
 let kernel = reactive({
   kernel_size: 3,
   kernel_size_list: [],
@@ -44,6 +46,9 @@ let exec_conv2d = () => {
   let kernel_final = kernel.kernel.map((x) => Number(x));
   if (stride.value > 0) {
     props.layer.conv2d(kernel_final, stride.value);
+        if(update_thumbnails.if){
+      update_thumbnails.fn()
+    }
   } else{
     alert("Stride should > 0.")
   }

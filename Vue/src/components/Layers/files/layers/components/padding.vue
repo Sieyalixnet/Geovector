@@ -9,9 +9,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { inject, ref } from "vue";
 import LabelInput from "./components/LabelInput.vue";
 const props = defineProps(["layer"]);
+const update_thumbnails=inject("update_thumbnails");
 let padding_value = ref(0);
 let times = ref(1);
 let exec_padding = () => {
@@ -21,6 +22,9 @@ let exec_padding = () => {
     times.value > 0
   ) {
     props.layer.padding_times(padding_value.value, times.value);
+    if(update_thumbnails.if){
+      update_thumbnails.fn()
+    }
   }
 };
 </script>

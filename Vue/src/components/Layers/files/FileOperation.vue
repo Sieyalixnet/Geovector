@@ -1,50 +1,22 @@
 <template>
-  <div id="FileContent">
-    <div class="filename" @click="hideLayer=!hideLayer">
-      <label >FileName</label>
-      <input type="text" v-model="props.file.name" v-on:click.stop />
+  <div id="FileOperationContent">
+    <div class="filename" @click="showLayers=!showLayers">
+      <label >File Operation</label>
     </div>
-    <Transition name="slide-fade">
-    <div class="layers" v-show="hideLayer">
-      <div
-        class="layer"
-        v-for="(item, index) in props.file.ChannelList"
-        :key="index"
-      >
-        <Layer
-          @renderMain="render_main(index)"
-          :layer="item"
-          :canvansid="`${props.file.name}_${index}`"
-        ></Layer>
-      </div>
-    </div>
-    </Transition>
-    <button @click="render_thumbnails_to_canvas()">Update Thumbnails</button>
+    <div style="width:100%;height:500px;" v-if="showLayers">aaa</div>
   </div>
 </template>
 
 <script setup>
 import { reactive,ref } from "@vue/reactivity";
 import { onMounted, provide } from "@vue/runtime-core";
-import Layer from "./layers/layer.vue";
-const props = defineProps(["file"]);
 
-let hideLayer = ref(false);
-
-let render_thumbnails_to_canvas = () => {
-  props.file.render_thumbnails_to_canvas();
-};
-onMounted(() => {
-  render_thumbnails_to_canvas();
-});
-let render_main = (index) => {
-  props.file.render_to_main_canvas(index);
-};
+let showLayers = ref(false);
 </script>
 
 <style lang="scss" scoped>
-#FileContent {
-  min-width: 100%;
+#FileOperationContent {
+  width: 100%;
   border: 1px solid rgba(0, 90, 40, 0.5);
   border-radius: 0.3125rem;
   transition: height 10s;
