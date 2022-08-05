@@ -7,7 +7,8 @@ export class ImageVector{
         this.ChannelList = []
     }
     set_List(VectorList){this.ChannelList=VectorList}
-    add_List(Vector){this.ChannelList.push(Vector)}
+    add_List(Vector){
+        this.ChannelList.push(Vector)}
     get_Vector(index){return this.ChannelList[index]}
     set_name(name){this.name=name}
     render_to_main_canvas(index){
@@ -26,8 +27,10 @@ export class ImageVector{
         }
     }
     delete(index){
+        this.ChannelList[index].drop()
+        this.ChannelList[index]=null
+        console.log(this.ChannelList[index])
         this.ChannelList.splice(index,1)
-        console.log(this.ChannelList)
     }
     upward(index){
         let temp = this.ChannelList[index]
@@ -46,15 +49,26 @@ export class ImageVector{
         this.ChannelList.push(temp)
 
     }
+    __copy__(index){//return a new Vector. 
+
+        let temp = createVector(this.ChannelList[index].array(),this.ChannelList[index].get_rows(),this.ChannelList[index].get_cols())
+        temp.OptionalAttributes.name= `${this.ChannelList[index].OptionalAttributes.name}_copy`
+        return temp
+
+    }
 }
 
 
 export function createImageVector_CTX(ctx, width, height){
     const data = Array.from(ctx.getImageData(0, 0, width, height).data)
-    let R = createVector(data.filter((_, index) => index % 4 == 0), height, width);
-    let G = createVector(data.filter((_, index) => index % 4 == 1), height, width);
-    let B = createVector(data.filter((_, index) => index % 4 == 2), height, width);
-    let A = createVector(data.filter((_, index) => index % 4 == 3), height, width);
+    // let R = createVector(data.filter((_, index) => index % 4 == 0), height, width);
+    // let G = createVector(data.filter((_, index) => index % 4 == 1), height, width);
+    // let B = createVector(data.filter((_, index) => index % 4 == 2), height, width);
+    // let A = createVector(data.filter((_, index) => index % 4 == 3), height, width);
+    let R =new Vector(data.filter((_, index) => index % 4 == 0), height, width);
+    let G =new Vector(data.filter((_, index) => index % 4 == 1), height, width);
+    let B =new Vector(data.filter((_, index) => index % 4 == 2), height, width);
+    let A =new Vector(data.filter((_, index) => index % 4 == 3), height, width);
     R.OptionalAttributes.name = `R_${Date.now()}`
     G.OptionalAttributes.name = `G_${Date.now()}`
     B.OptionalAttributes.name = `B_${Date.now()}`

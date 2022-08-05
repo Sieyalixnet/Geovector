@@ -13,7 +13,6 @@
         >
           <Layer
             @renderMain="render_main"
-            @LayerOperation_exec="exec_operation"
             :layer="item"
             :canvansid="`${props.file.name}_${index}`"
             :LayerIndex="index"
@@ -45,35 +44,7 @@ const { List } = ImageFileList;
 let showLayers = ref(true);
 let auto_render_thumbails = ref(true);
 
-let exec_operation = (option, index) => {
-  //exec_operation for LayerOperation
-  const { operation, SelectedFile } = option;
-  switch (operation) {
-    case "Copy":
-      props.file.copy(index);
-      break;
-    case "Upward":
-      props.file.upward(index);
-      break;
-    case "Downward":
-      props.file.downward(index);
-      break;
-    case "Delete":
-      props.file.delete(index);
-      break;
-    case "Move To":
-      //console.log(SelectedFile);
-      //console.log(List.find(item => item.name === SelectedFile))
-      List.find((item) => item.name === SelectedFile).add_List(
-        props.file.get_Vector(index)
-      );
-      props.file.delete(index);
-      break;
-  }
-  if (auto_render_thumbails.value) {
-    render_thumbnails_to_canvas();
-  }
-};
+provide("file", props.file);
 
 let render_thumbnails_to_canvas = () => {
   props.file.render_thumbnails_to_canvas();

@@ -48,6 +48,11 @@ export class Vector {
     array() {
         return Array.from(this.memoryArray())
     }
+    drop(){
+        this.Data.clear()
+        this.update()
+        this.Data.free()
+    }
     get_ptr() {
         return this.Data.get_ptr()
     }
@@ -129,9 +134,9 @@ export class Vector {
         let ctx = canvas.getContext('2d')
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         let date = Date.now()
-        let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render_thumbnails(ratio, reflect)), Math.ceil(this.cols / ratio), Math.ceil(this.rows / ratio), { colorSpace: "srgb" })
+        let temp = this.Data.render_thumbnails(ratio, reflect)
+        let imageData = new ImageData(Uint8ClampedArray.from(temp), Math.ceil(this.cols / ratio), Math.ceil(this.rows / ratio), { colorSpace: "srgb" })
         console.log(`${Date.now() - date}ms`);
-
         ctx.putImageData(imageData, (thumbnails_size - Math.ceil(this.cols / ratio)) / 2, (thumbnails_size - Math.ceil(this.rows / ratio)) / 2)
 
 
@@ -146,10 +151,10 @@ export class Vector {
         canvas.height = this.rows
 
         let date = Date.now()
-        // let data = (this.array().map((value) => { return [value,value,value,255] })).flat()
+        let data = (this.array().map((value) => { return [value,value,value,255] })).flat()
 
-        // let imageData = new ImageData(Uint8ClampedArray.from(data), this.cols, this.rows,{colorSpace:"srgb"})
-        let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render(reflect)), this.cols, this.rows, { colorSpace: "srgb" })
+        let imageData = new ImageData(Uint8ClampedArray.from(data), this.cols, this.rows,{colorSpace:"srgb"})
+        // let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render(reflect)), this.cols, this.rows, { colorSpace: "srgb" })
         console.log(`${Date.now() - date}ms`);
         ctx.putImageData(imageData, 0, 0)
 

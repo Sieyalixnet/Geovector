@@ -122,4 +122,3 @@ pub fn mm(a: &BaseVector, b: &BaseVector) -> BaseVector {
     let result = BaseVector::new(c.len(), c[0].len(), c.into_iter().flat_map(|x| x).collect());
     result
 }
-

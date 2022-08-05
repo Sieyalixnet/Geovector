@@ -30,18 +30,55 @@ import LabelSelector from "./components/LabelSelector.vue";
 import LabelFileSelector from "./components/LabelFileSelector.vue";
 import { ref,inject} from "vue";
 let ImageFileList = inject("ImageFileList");
+const file = inject("file")
+const update_thumbnails=inject("update_thumbnails");
 const { List } = ImageFileList;
 let SelectedFile = ref("");
-const emits = defineEmits(["LayerOperation_exec"]);
 let operation = ref("Select an operation");
 let operations = ["Copy", "Upward", "Downward", "Delete","Move To"];
-const props = defineProps(["layer"]);
-let exec_operation = () => {
-  if (operations.includes(operation.value)) {
-    
-    emits("LayerOperation_exec", {operation:operation.value,SelectedFile:SelectedFile.value});
+const props = defineProps(["layer","LayerIndex"]);
+
+let exec_operation = async () => {
+  //exec_operation for LayerOperation
+  let op = operation.value
+  let index = props.LayerIndex
+  switch (op) {
+    case "Copy":
+      await file.copy(index);
+      break;
+    case "Upward":
+      file.upward(index);
+      break;
+    case "Downward":
+      file.downward(index);
+      break;
+    case "Delete":
+      file.delete(index);
+      break;
+    case "Move To":
+      //console.log(SelectedFile);
+      //console.log(List.find(item => item.name === SelectedFile))
+      console.log(List)
+      console.log(SelectedFile.value)
+      let targetList = List.find((item) => item.name === SelectedFile.value)
+      targetList.add_List(
+       file.__copy__(index)
+      );
+      file.delete(index);
+      break;
   }
+    if(update_thumbnails.if){
+      update_thumbnails.fn()
+    } 
 };
+
+
+// let exec_operation = () => {
+//   if (operations.includes(operation.value)) {
+    
+//     emits("LayerOperation_exec", {operation:operation.value,SelectedFile:SelectedFile.value});
+//   }
+// };
 </script>
 
 <style lang="scss" scoped>

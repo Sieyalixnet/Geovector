@@ -37,7 +37,7 @@
       
       <div class="operation_component">
         <Transition name="fade">
-        <component :is="select_option" :layer="props.layer" @LayerOperation_exec="LayerOperation_exec"></component>
+        <component :is="select_option" :layer="props.layer" :LayerIndex="props.LayerIndex" ></component>
         </Transition>
         <!-- <Padding
           v-if="select_option == 'padding'"
@@ -73,16 +73,10 @@ import CalOperation from "./components/CalculateOperation.vue";
 import CalOperationValue from "./components/CalculateOperationValue.vue";
 import LayerOperation from "./components/LayerOperation.vue";
 const emits = defineEmits(["renderMain", "LayerOperation_exec"]);
-const props = defineProps(["layer", "canvansid", "file", "LayerIndex"]);
+const props = defineProps(["layer", "canvansid", "LayerIndex"]);
 
 //omit controller
 let showDetail = ref(true);
-
-//emit the layer Operation
-let LayerOperation_exec = (option) => {
-  select_option.value = Padding;
-  emits("LayerOperation_exec", option, props.LayerIndex);
-};
 
 //manage the selectbox and loaded Components
 let select_option = shallowRef(Padding);

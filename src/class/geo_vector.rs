@@ -41,6 +41,12 @@ impl BaseVector {
         }
         string
     }
+    pub fn clear(&mut self){
+        self.data=vec![];
+        self.total_rows=0;
+        self.total_cols=0;
+
+    }
     // a JSarray Example
     // pub fn reset() -> js_sys::Array {
     //     let a = js_sys::Array::new();
@@ -338,7 +344,12 @@ impl BaseVector {
         result
     }
 }
+impl Drop for BaseVector{
 
+    fn drop(&mut self) {
+        log!("BaseVector dropped");
+    }
+}
 impl BaseVector {
     pub fn reshape(&self, shape_value: usize) -> Vec<Vec<f64>> {
         let mut result: Vec<Vec<f64>> = Vec::new();
@@ -396,8 +407,8 @@ impl BaseVector {
         let position = rows * self.total_cols as i32 + cols;
         return position;
     }
-}
 
+}
 
 #[cfg(test)]
 mod tests {
