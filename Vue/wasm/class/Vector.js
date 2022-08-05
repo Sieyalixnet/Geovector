@@ -1,5 +1,6 @@
 import { BaseVector } from "geo-vector";
 import { memory } from "geo-vector/geo_vector_bg.wasm";
+import { reshape,reflect_to } from "../utils/array";
 
 export function createVector(array, rows, cols) {//rows->height, cols->width
     const data = new Vector(array, rows, cols);
@@ -134,7 +135,7 @@ export class Vector {
         let ctx = canvas.getContext('2d')
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         let date = Date.now()
-        let temp = this.Data.render_thumbnails(ratio, reflect)
+        let temp = __render_thumbnails__(this,ratio, reflect)
         let imageData = new ImageData(Uint8ClampedArray.from(temp), Math.ceil(this.cols / ratio), Math.ceil(this.rows / ratio), { colorSpace: "srgb" })
         console.log(`${Date.now() - date}ms`);
         ctx.putImageData(imageData, (thumbnails_size - Math.ceil(this.cols / ratio)) / 2, (thumbnails_size - Math.ceil(this.rows / ratio)) / 2)
@@ -151,7 +152,7 @@ export class Vector {
         canvas.height = this.rows
 
         let date = Date.now()
-        let data = (this.array().map((value) => { return [value,value,value,255] })).flat()
+        let data = __render__(this, reflect)
 
         let imageData = new ImageData(Uint8ClampedArray.from(data), this.cols, this.rows,{colorSpace:"srgb"})
         // let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render(reflect)), this.cols, this.rows, { colorSpace: "srgb" })
@@ -161,3 +162,36 @@ export class Vector {
 
     }
 }
+
+function __render__(Vector,reflect){
+    let data = Vector.array().flat()
+    console.log(data.length)
+    if (reflect) {
+        data = reflect_to(data, 0.0, 255.0);
+    }
+    return (data.map((value) => { return [value,value,value,255] })).flat()
+
+}
+
+function __render_thumbnails__(Vector, ratio, reflect){
+    console.log(Vector)
+        let temp = reshape(Vector.array(),[Vector.get_rows(),-1]);
+        let temp_rows= [];
+        for (let i=0;i < temp.length;i++) {
+            if (i % ratio == 0) {
+                let new_row = [];
+                for (let j=0;j< temp[i].length;j++ ){
+                    if (j % ratio == 0) {
+                        new_row.push(temp[i][j]);
+                    }
+                }
+                temp_rows.push(new_row);
+            }
+        }
+        temp_rows = temp_rows.flat();
+        if (reflect) {
+            temp_rows = reflect_to(temp_rows, 0.0, 255.0);
+        }
+        let result = (temp_rows.map((value) => { return [value,value,value,255] })).flat()
+        return result
+    }
