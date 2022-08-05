@@ -43,7 +43,7 @@ export class Vector {
     }
     //in this part, functions mostly get/set things from WASM
     memoryArray() {
-        return new Float64Array(memory.buffer, this.get_ptr(), this.get_cols() * this.get_rows())
+        return new Float32Array(memory.buffer, this.get_ptr(), this.get_cols() * this.get_rows())
     }
     array() {
         return Array.from(this.memoryArray())

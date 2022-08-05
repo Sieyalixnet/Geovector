@@ -18,8 +18,8 @@ impl<'a> Drop for Timer<'a> {
     }
 }
 
-pub fn reshape(array1d:&Vec<f64>, shape_value: usize) -> Vec<Vec<f64>> {
-    let mut result: Vec<Vec<f64>> = Vec::new();
+pub fn reshape(array1d:&Vec<f32>, shape_value: usize) -> Vec<Vec<f32>> {
+    let mut result: Vec<Vec<f32>> = Vec::new();
     let pieces = array1d.len() / shape_value;
     for i in 0..pieces {
         result.push((array1d[(i * shape_value)..((i + 1) * shape_value)]).to_vec());
@@ -27,11 +27,11 @@ pub fn reshape(array1d:&Vec<f64>, shape_value: usize) -> Vec<Vec<f64>> {
     result
 }
 
-    pub fn reflect_to(data:Vec<f64>,min_reflect:f64,max_reflect:f64)->Vec<f64>{
+    pub fn reflect_to(data:Vec<f32>,min_reflect:f32,max_reflect:f32)->Vec<f32>{
         let data = data.clone();
 
-        let min = data.iter().cloned().fold(std::f64::MAX,|a,b|a.min(b));
-        let max = data.iter().cloned().fold(std::f64::MIN,|a,b|a.max(b));
+        let min = data.iter().cloned().fold(std::f32::MAX,|a,b|a.min(b));
+        let max = data.iter().cloned().fold(std::f32::MIN,|a,b|a.max(b));
 
         let result = data.into_iter().map(|x| (x-min)/(max-min)).map(|x| x*(max_reflect+min_reflect)-min_reflect).collect();
         return result;
