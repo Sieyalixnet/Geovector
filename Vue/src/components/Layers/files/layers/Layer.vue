@@ -77,8 +77,8 @@
 <script setup>
 import { reactive, ref, shallowRef } from "@vue/reactivity";
 import { computed, provide } from "@vue/runtime-core";
-import Padding from "./components/padding.vue";
-import conv2d from "./components/conv2d.vue";
+import Padding from "./components/Padding.vue";
+import conv2d from "./components/Conv2d.vue";
 import CalOperation from "./components/CalculateOperation.vue";
 import CalOperationValue from "./components/CalculateOperationValue.vue";
 import LayerOperation from "./components/LayerOperation.vue";

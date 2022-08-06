@@ -35,7 +35,7 @@
 import { reactive } from "@vue/reactivity";
 import { computed, provide, watch } from "@vue/runtime-core";
 import Upload from "./components/Upload.vue";
-import File from "./files/file.vue";
+import File from "./files/File.vue";
 import FileOperation from "./files/FileOperation.vue";
 let ImageFileList = reactive({ List: [], ALL_Channel_List: [] });
 // let main_canvas_div_height = computed(()=>{
