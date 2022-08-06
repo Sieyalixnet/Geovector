@@ -1,9 +1,6 @@
 use crate::{
     log,
-    tools::{
-        self,
-        tools::{reflect_to, reshape, Timer},
-    },
+    tools::tools::{reflect_to, reshape, Timer},
 };
 use wasm_bindgen::prelude::*;
 
@@ -12,12 +9,12 @@ use wasm_bindgen::prelude::*;
 pub struct BaseVector {
     total_rows: usize,
     total_cols: usize,
-    data: Vec<f32>,
+    data: Vec<f64>,
 }
 
 #[wasm_bindgen]
 impl BaseVector {
-    pub fn new(total_rows: usize, total_cols: usize, data: Vec<f32>) -> BaseVector {
+    pub fn new(total_rows: usize, total_cols: usize, data: Vec<f64>) -> BaseVector {
         BaseVector {
             total_rows,
             total_cols,
@@ -41,33 +38,32 @@ impl BaseVector {
         }
         string
     }
-    pub fn clear(&mut self){
-        self.data=vec![];
-        self.total_rows=0;
-        self.total_cols=0;
-
+    pub fn clear(&mut self) {
+        self.data = vec![];
+        self.total_rows = 0;
+        self.total_cols = 0;
     }
     // a JSarray Example
     // pub fn reset() -> js_sys::Array {
     //     let a = js_sys::Array::new();
-    //     let b = JsValue::from_f32(10.0);
+    //     let b = JsValue::from_f64(10.0);
     //     a.push(&b);
     //     return a;
     // }
 
     //PARTS: Some getter and Setter
-    pub fn set(&mut self, rows: usize, cols: usize, set_data: f32) {
+    pub fn set(&mut self, rows: usize, cols: usize, set_data: f64) {
         let position = rows * self.total_cols + cols;
         self.data[position] = set_data;
     }
-    pub fn get(&self, rows: usize, cols: usize) -> f32 {
+    pub fn get(&self, rows: usize, cols: usize) -> f64 {
         let position = rows * self.total_cols + cols;
         return self.data[position];
     }
-    pub fn set_index(&mut self, index: usize, set_data: f32) {
+    pub fn set_index(&mut self, index: usize, set_data: f64) {
         self.data[index] = set_data;
     }
-    pub fn get_index(&self, index: usize) -> f32 {
+    pub fn get_index(&self, index: usize) -> f64 {
         self.data[index]
     }
 
@@ -77,7 +73,7 @@ impl BaseVector {
     pub fn get_cols(&self) -> usize {
         return self.total_cols;
     }
-    pub fn get_ptr(&self) -> *const f32 {
+    pub fn get_ptr(&self) -> *const f64 {
         self.data.as_ptr()
     }
     pub fn total_cols(&self) -> usize {
@@ -86,7 +82,17 @@ impl BaseVector {
     pub fn total_rows(&self) -> usize {
         self.total_rows
     }
+    pub fn get_max(&self)-> f64{
+        let data = self.data.clone();
+        let max = data.iter().cloned().fold(std::f64::MIN, |a, b| a.max(b));
+        max
+    }
+    pub fn get_min(&self)-> f64{
+        let data = self.data.clone();
+        let min = data.iter().cloned().fold(std::f64::MAX, |a, b| a.min(b));
+        min
 
+    }
     //PARTS: matrix operation
     //in this part, if some operation will change the shape of the matrix, we should also modify the total_rows and total_cols manually.
     pub fn mul(&mut self, b: &BaseVector) {
@@ -138,28 +144,28 @@ impl BaseVector {
         self.data = c.into_iter().flat_map(|x| x).collect();
     }
 
-    pub fn add_value(&mut self, b: f32) {
+    pub fn add_value(&mut self, b: f64) {
         for i in 0..self.data.len() {
             self.data[i] += b;
         }
     }
-    pub fn sub_value(&mut self, b: f32) {
+    pub fn sub_value(&mut self, b: f64) {
         for i in 0..self.data.len() {
             self.data[i] -= b;
         }
     }
-    pub fn mul_value(&mut self, b: f32) {
+    pub fn mul_value(&mut self, b: f64) {
         for i in 0..self.data.len() {
             self.data[i] *= b;
         }
     }
-    pub fn div_value(&mut self, b: f32) {
+    pub fn div_value(&mut self, b: f64) {
         for i in 0..self.data.len() {
             self.data[i] /= b;
         }
     }
     //PARTS: matrix/science calculate
-    pub fn padding(&mut self, padding_value: f32) {
+    pub fn padding(&mut self, padding_value: f64) {
         let mut new_data = self.reshape(self.total_cols);
         for row in &mut new_data {
             row.push(padding_value);
@@ -174,17 +180,17 @@ impl BaseVector {
         self.total_cols = new_data[0].len();
         self.data = new_data.into_iter().flat_map(|x| x).collect();
     }
-    pub fn padding_times(&mut self, padding_value: f32, times: usize) {
+    pub fn padding_times(&mut self, padding_value: f64, times: usize) {
         let mut new_data = self.reshape(self.total_cols);
         for row in &mut new_data {
-            for i in 0..times {
+            for _ in 0..times {
                 row.push(padding_value);
                 row.insert(0, padding_value);
             }
         }
         let new_length = new_data[0].len();
         let padding_row = vec![padding_value; new_length];
-        for i in 0..times {
+        for _ in 0..times {
             new_data.insert(0, padding_row.clone());
             new_data.push(padding_row.clone());
         }
@@ -193,10 +199,10 @@ impl BaseVector {
         self.total_cols = new_data[0].len();
         self.data = new_data.into_iter().flat_map(|x| x).collect();
     }
-    pub fn conv2d_array(&self, kernel: Vec<f32>, stride: usize) -> Vec<f32> {
+    pub fn conv2d_array(&self, kernel: Vec<f64>, stride: usize) -> Vec<f64> {
         //let _timer = Timer::new("conv2d");
-        let kernel = reshape(&kernel, (kernel.len() as f32).sqrt().floor() as usize);
-        let mut result: Vec<f32> = Vec::new();
+        let kernel = reshape(&kernel, (kernel.len() as f64).sqrt().floor() as usize);
+        let mut result: Vec<f64> = Vec::new();
 
         let mut row_lock: usize = 0; //Locked row
         let mut row_lock_locked: bool = false; //In fact, it will not affect anything. But this lock is needed in this process to make sure locked row will not be modified again.
@@ -222,10 +228,10 @@ impl BaseVector {
         println!("column_number is {}", column_number);
         result
     }
-    pub fn conv2d(&mut self, kernel: Vec<f32>, stride: usize) {
+    pub fn conv2d(&mut self, kernel: Vec<f64>, stride: usize) {
         //let _timer = Timer::new("conv2d");
-        let kernel = reshape(&kernel, (kernel.len() as f32).sqrt().floor() as usize);
-        let mut result: Vec<f32> = Vec::new();
+        let kernel = reshape(&kernel, (kernel.len() as f64).sqrt().floor() as usize);
+        let mut result: Vec<f64> = Vec::new();
 
         let mut row_lock: usize = 0; //Locked row
         let mut row_lock_locked: bool = false; //In fact, it will not affect anything. But this lock is needed in this process to make sure locked row will not be modified again.
@@ -258,17 +264,17 @@ impl BaseVector {
         match normalize_type {
             "min_max" => {
                 //fold like reduce
-                let min = data.iter().cloned().fold(std::f32::MAX, |a, b| a.min(b));
-                let max = data.iter().cloned().fold(std::f32::MIN, |a, b| a.max(b));
+                let min = data.iter().cloned().fold(std::f64::MAX, |a, b| a.min(b));
+                let max = data.iter().cloned().fold(std::f64::MIN, |a, b| a.max(b));
                 result = data.into_iter().map(|x| (x - min) / (max - min)).collect();
             }
             "z_score" => {
-                let mean = data.iter().cloned().fold(0.0, |a, b| a + b) / data.len() as f32;
+                let mean = data.iter().cloned().fold(0.0, |a, b| a + b) / data.len() as f64;
                 let std = data
                     .iter()
                     .cloned()
                     .fold(0.0, |a, b| a + ((b - mean) * (b - mean)))
-                    / data.len() as f32;
+                    / data.len() as f64;
                 result = data
                     .into_iter()
                     .map(|x| (x - mean) / (std.sqrt()))
@@ -283,9 +289,9 @@ impl BaseVector {
 
     pub fn transpose(&mut self) {
         let origin_data = self.reshape(self.total_cols);
-        let mut result: Vec<Vec<f32>> = vec![];
+        let mut result: Vec<Vec<f64>> = vec![];
         for i in 0..origin_data[0].len() {
-            let mut temp: Vec<f32> = vec![];
+            let mut temp: Vec<f64> = vec![];
             for j in 0..origin_data.len() {
                 temp.push(origin_data[j][i]);
             }
@@ -296,32 +302,26 @@ impl BaseVector {
         self.data = result.into_iter().flat_map(|x| x).collect();
     }
 
-    //PARTS: Outputs
-    pub fn render(&self, reflect: bool) -> Vec<u8> {
-        //TODO need to calculate the real pixel value
-        let mut result: Vec<u8> = Vec::new();
+    pub fn reflect_to(&mut self, min_reflect: f64, max_reflect: f64) {
+        let data = self.data.clone();
 
-        let data = if reflect {
-            reflect_to(self.data.clone(), 0.0, 255.0)
-        } else {
-            self.data.clone()
-        };
+        let min = data.iter().cloned().fold(std::f64::MAX, |a, b| a.min(b));
+        let max = data.iter().cloned().fold(std::f64::MIN, |a, b| a.max(b));
 
-        for i in 0..self.data.len() {
-            result.push((data[i]).round() as u8); //*255?
-            result.push((data[i]).round() as u8);
-            result.push((data[i]).round() as u8);
-            result.push(255);
-        }
-        result
+        let result = data
+            .into_iter()
+            .map(|x| (x - min) / (max - min))
+            .map(|x| x * (max_reflect + min_reflect) - min_reflect)
+            .collect();
+        self.data = result;
     }
-    pub fn render_thumbnails(&self, ratio: usize, reflect: bool) -> Vec<u8> {
+    pub fn rescale_to(&mut self, ratio: usize) {
         //TODO need to calculate the real pixel value
         let temp = self.reshape(self.total_cols);
-        let mut temp_rows: Vec<Vec<f32>> = vec![];
+        let mut temp_rows: Vec<Vec<f64>> = vec![];
         for i in 0..temp.len() {
             if i % ratio == 0 {
-                let mut new_row: Vec<f32> = vec![];
+                let mut new_row: Vec<f64> = vec![];
                 for j in 0..temp[i].len() {
                     if j % ratio == 0 {
                         new_row.push(temp[i][j].clone());
@@ -330,41 +330,98 @@ impl BaseVector {
                 temp_rows.push(new_row);
             }
         }
-        let mut temp_rows: Vec<f32> = temp_rows.into_iter().flat_map(|x| x).collect();
-        if reflect {
-            temp_rows = reflect_to(temp_rows, 0.0, 255.0);
-        }
-        let mut result: Vec<u8> = Vec::new();
-        for i in 0..temp_rows.len() {
-            result.push((temp_rows[i]).round() as u8); //*255?
-            result.push((temp_rows[i]).round() as u8);
-            result.push((temp_rows[i]).round() as u8);
-            result.push(255);
-        }
-        result
+        self.total_rows = temp_rows.len();
+        self.total_cols = temp_rows[0].len();
+        self.data = temp_rows.into_iter().flat_map(|x| x).collect();
     }
-}
-impl Drop for BaseVector{
 
-    fn drop(&mut self) {
-        log!("BaseVector dropped");
+    pub fn reverse_horizontal(&mut self) {
+        self.data = self
+            .reshape(self.total_cols)
+            .into_iter()
+            .rev()
+            .flat_map(|x| x)
+            .collect();
     }
+
+    pub fn reverse_vertical(&mut self) {
+        let temp = self.reshape(self.total_cols);
+        let mut result: Vec<Vec<f64>> = vec![];
+        for i in 0..temp.len() {
+            result.push(temp[i].clone().into_iter().rev().collect());
+        }
+        self.data=result.into_iter().flat_map(|x| x).collect();
+    }
+
+    // //PARTS: Outputs
+    // pub fn render(&self, reflect: bool) -> Vec<u8> {
+    //     //TODO need to calculate the real pixel value
+    //     let mut result: Vec<u8> = Vec::new();
+
+    //     let data = if reflect {
+    //         reflect_to(self.data.clone(), 0.0, 255.0)
+    //     } else {
+    //         self.data.clone()
+    //     };
+
+    //     for i in 0..self.data.len() {
+    //         result.push((data[i]).round() as u8); //*255?
+    //         result.push((data[i]).round() as u8);
+    //         result.push((data[i]).round() as u8);
+    //         result.push(255);
+    //     }
+    //     result
+    // }
+    // pub fn render_thumbnails(&self, ratio: usize, reflect: bool) -> Vec<u8> {
+    //     //TODO need to calculate the real pixel value
+    //     let temp = self.reshape(self.total_cols);
+    //     let mut temp_rows: Vec<Vec<f64>> = vec![];
+    //     for i in 0..temp.len() {
+    //         if i % ratio == 0 {
+    //             let mut new_row: Vec<f64> = vec![];
+    //             for j in 0..temp[i].len() {
+    //                 if j % ratio == 0 {
+    //                     new_row.push(temp[i][j].clone());
+    //                 }
+    //             }
+    //             temp_rows.push(new_row);
+    //         }
+    //     }
+    //     let mut temp_rows: Vec<f64> = temp_rows.into_iter().flat_map(|x| x).collect();
+    //     if reflect {
+    //         temp_rows = reflect_to(temp_rows, 0.0, 255.0);
+    //     }
+    //     let mut result: Vec<u8> = Vec::new();
+    //     for i in 0..temp_rows.len() {
+    //         result.push((temp_rows[i]).round() as u8); //*255?
+    //         result.push((temp_rows[i]).round() as u8);
+    //         result.push((temp_rows[i]).round() as u8);
+    //         result.push(255);
+    //     }
+    //     result
+    // }
 }
+// impl Drop for BaseVector{
+
+//     fn drop(&mut self) {
+//         log!("BaseVector dropped");
+//     }
+// }
 impl BaseVector {
-    pub fn reshape(&self, shape_value: usize) -> Vec<Vec<f32>> {
-        let mut result: Vec<Vec<f32>> = Vec::new();
+    pub fn reshape(&self, shape_value: usize) -> Vec<Vec<f64>> {
+        let mut result: Vec<Vec<f64>> = Vec::new();
         let pieces = self.data.len() / shape_value;
         for i in 0..pieces {
             result.push((&self.data[(i * shape_value)..((i + 1) * shape_value)]).to_vec());
         }
         result
     }
-    pub fn get_data(&self) -> Vec<f32> {
+    pub fn get_data(&self) -> Vec<f64> {
         self.data.clone()
     }
 
-    fn _conv2d(&self, row: usize, column: usize, kernel: &Vec<Vec<f32>>) -> Option<(f32, usize)> {
-        let mut count: f32 = 0.0;
+    fn _conv2d(&self, row: usize, column: usize, kernel: &Vec<Vec<f64>>) -> Option<(f64, usize)> {
+        let mut count: f64 = 0.0;
         let kernel_length = kernel.len();
         let kernel_range: core::ops::RangeInclusive<i32>;
         match kernel_length % 2 {
@@ -400,16 +457,16 @@ impl BaseVector {
                 }
             }
         }
-        return Some(((count) / (kernel_length as f32).powi(2), row as usize)); //if we need ignore the center, we should change the kernel_length to kernel_length-1
+        return Some(((count) / (kernel_length as f64).powi(2), row as usize)); //if we need ignore the center, we should change the kernel_length to kernel_length-1
     }
     pub fn get_index_2d(&self, rows: i32, cols: i32) -> i32 {
         //
         let position = rows * self.total_cols as i32 + cols;
         return position;
     }
-
 }
 
+////! DO NOT USE ANY LOG!() IN A TEST////
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -417,20 +474,23 @@ mod tests {
     fn test_conv2d() {
         let mut test_vec = vec![0.0; 40];
         for i in 0..test_vec.len() {
-            test_vec[i] = i as f32;
+            test_vec[i] = i as f64;
         }
-        let a = BaseVector::new(5, 8, test_vec);
+        let mut a = BaseVector::new(5, 8, test_vec);
         let kernel = vec![0.5; 16];
-        let b = a.conv2d_array(kernel, 1);
+
+        let b = a.conv2d_array(kernel.clone(), 1);
         println!("{:?}", &b.len());
         println!("{:?}", &b);
-        let c = a.render(false);
-        println!("{:?}", &c);
+
+        a.conv2d(kernel, 2);
+        println!("{:?}", &a.data.len());
+        println!("{:?}", &a);
     }
 
     #[test]
     fn add_sub_mul_div() {
-        let test_vec: Vec<f32> = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
+        let test_vec: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
         let mut a = BaseVector::new(2, 3, test_vec.clone());
         let mut b = BaseVector::new(2, 3, test_vec.clone());
         a.add(&b);
@@ -447,7 +507,7 @@ mod tests {
     pub fn padding_test() {
         let mut test_vec = vec![0.0; 100];
         for i in 0..test_vec.len() {
-            test_vec[i] = i as f32;
+            test_vec[i] = i as f64;
         }
         let mut a = BaseVector::new(10, 10, test_vec);
         a.padding(0.0);
@@ -460,17 +520,18 @@ mod tests {
         println!("col: {}, rows: {}", a.total_cols, a.total_rows);
     }
 
-    #[test]
-    pub fn render_thumbnails_test() {
-        let mut test_vec = vec![0.0; 100];
-        for i in 0..test_vec.len() {
-            test_vec[i] = i as f32;
-        }
-        let a = BaseVector::new(10, 10, test_vec);
-        let result = a.render_thumbnails(4, false);
-        println!("lenth is {}", result.len());
-        println!("{:?}", result);
-    }
+    // #[test]
+    //decrepted
+    // pub fn render_thumbnails_test() {
+    //     let mut test_vec = vec![0.0; 100];
+    //     for i in 0..test_vec.len() {
+    //         test_vec[i] = i as f64;
+    //     }
+    //     let a = BaseVector::new(10, 10, test_vec);
+    //     let result = a.render_thumbnails(4, false);
+    //     println!("lenth is {}", result.len());
+    //     println!("{:?}", result);
+    // }
 
     #[test]
     pub fn transpose_test() {
@@ -485,18 +546,34 @@ mod tests {
     #[test]
     pub fn reflect_normalize_test() {
         let mut a = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
-        let result = reflect_to(a.data.clone(), 0.0, 255.0);
-        println!("{:?}", result);
+        // let result = reflect_to(a.data.clone(), 0.0, 255.0);
+        // println!("{:?}", result);
         a.normalize("min_max");
         println!("{:?}", a.get_data());
         assert_eq!(
-            a.get_data().iter().fold(std::f32::MAX, |a, b| a.min(*b)),
+            a.get_data().iter().fold(std::f64::MAX, |a, b| a.min(*b)),
             0.0
         );
+        let mut a = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        // let result = reflect_to(a.data.clone(), 0.0, 255.0);
+        // println!("{:?}", result);
+        a.normalize("z_score");
+        println!("{:?}", a.get_data());
+        // assert_eq!(
+        //     a.get_data().iter().fold(std::f64::MAX, |a, b| a.min(*b)),
+        //     0.0
+        // );
+        let mut a = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        a.reflect_to(0.0, 255.0);
+        println!("{:?}", a.get_data());
+        assert_eq!(
+            a.get_data().iter().fold(std::f64::MIN, |a, b| a.max(*b)),
+            255.0
+        );  
     }
 
     #[test]
-    pub fn calculate_value_test(){
+    pub fn calculate_value_test() {
         let mut a = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
         a.add_value(1.0);
         assert_eq!(a.get_data(), vec![2.0, 3.0, 4.0, 5.0, 6.0, 7.0]);
@@ -506,6 +583,23 @@ mod tests {
         assert_eq!(a.get_data(), vec![2.0, 4.0, 6.0, 8.0, 10.0, 12.0]);
         a.div_value(2.0);
         assert_eq!(a.get_data(), vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
-
     }
+
+    #[test]
+    pub fn reverse_test() {
+        let mut a = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        a.reverse_vertical();
+        assert_eq!(a.total_cols, 3);
+        assert_eq!(a.total_rows, 2);
+        assert_eq!(a.get_data(), vec![3.0, 2.0, 1.0, 6.0, 5.0, 4.0]);
+        println!("{:?}", a.clone().reshape(a.total_cols));
+
+        let mut b = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        b.reverse_horizontal();
+        assert_eq!(b.total_cols, 3);
+        assert_eq!(b.total_rows, 2);
+        assert_eq!(b.get_data(), vec![4.0, 5.0, 6.0, 1.0, 2.0, 3.0]);
+        println!("{:?}", b.clone().reshape(a.total_cols));
+    }
+
 }

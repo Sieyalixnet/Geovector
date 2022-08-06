@@ -33,3 +33,12 @@ export function reflect_to(data, min_reflect, max_reflect) {
     let result = data.map(x => ((x - min) / (max - min))).map(x => { return (x * (max_reflect + min_reflect) - min_reflect) })
     return result;
 }
+
+export function max_f64(data){
+    return data.reduce((a, b) => Math.max(a, b), -Infinity)
+}
+
+export function min_f64(data){
+    return data.reduce((a, b) => Math.min(a, b), Infinity)
+
+}

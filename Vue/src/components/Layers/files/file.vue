@@ -37,7 +37,7 @@
 <script setup>
 import { reactive, ref } from "@vue/reactivity";
 import { onMounted, provide, inject } from "@vue/runtime-core";
-import Layer from "./layers/Layer.vue";
+import Layer from "./layers/layer.vue";
 const props = defineProps(["file"]);
 let ImageFileList = inject("ImageFileList");
 const { List } = ImageFileList;

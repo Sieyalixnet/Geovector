@@ -2,44 +2,54 @@
   <div
     class="layerContent"
     :class="`${layer.OptionalAttributes.name[0]}_layer`"
-  ><Transition name="fade">
-    <div v-show="showDetail == false" style="padding:0.1875rem; width: 100%;">
-      <div class="OmitInput">
-        <button @click="showDetail = !showDetail">+</button>
-        <input type="text" v-model="layer.OptionalAttributes.name" />
-      </div>
-   
-   
-   </div>
-   </Transition>
-   <Transition name="fade">
-    <div v-show="showDetail == true" class="layerContentDetail">
-      <div class="canvas_block" @click="$emit('renderMain', props.LayerIndex)">
-        <canvas height="100" width="100" :id="props.canvansid"></canvas>
-      </div>
-
-      <div class="layerTitle">
+  >
+    <Transition name="fade">
+      <div v-show="showDetail == false" style="padding: 0.1875rem; width: 100%">
         <div class="OmitInput">
-          <button @click="showDetail = !showDetail">-</button>
+          <button @click="showDetail = !showDetail">+</button>
           <input type="text" v-model="layer.OptionalAttributes.name" />
         </div>
-
-        <select v-model="select_option">
-          <option
-            v-for="(item, index) in operation"
-            :key="index"
-            :value="item.component"
-          >
-            {{ item.name }}
-          </option>
-        </select>
       </div>
-      
-      <div class="operation_component">
-        <Transition name="fade">
-        <component :is="select_option" :layer="props.layer" :LayerIndex="props.LayerIndex" ></component>
-        </Transition>
-        <!-- <Padding
+    </Transition>
+    <Transition name="fade">
+      <div v-show="showDetail == true" class="layerContentDetail">
+        <div
+          class="canvas_block"
+          @click="$emit('renderMain', props.LayerIndex)"
+        >
+          <canvas height="100" width="100" :id="props.canvansid"></canvas>
+        </div>
+
+        <div class="layerTitle">
+          <div class="OmitInput">
+            <button @click="showDetail = !showDetail">-</button>
+            <input type="text" v-model="layer.OptionalAttributes.name" />
+          </div>
+
+          <select v-model="select_option">
+            <option
+              v-for="(item, index) in operation"
+              :key="index"
+              :value="item.component"
+            >
+              {{ item.name }}
+            </option>
+          </select>
+          <div class="attr">
+            <label>min:{{ Math.round(props.layer.min*100)/100 }}, max:{{ Math.round(props.layer.max*100)/100 }}</label>
+            <label>W:{{ props.layer.cols }}, H:{{ props.layer.rows }}</label>
+          </div>
+        </div>
+
+        <div class="operation_component">
+          <Transition name="fade">
+            <component
+              :is="select_option"
+              :layer="props.layer"
+              :LayerIndex="props.LayerIndex"
+            ></component>
+          </Transition>
+          <!-- <Padding
           v-if="select_option == 'padding'"
           :layer="props.layer"
         ></Padding>
@@ -58,20 +68,21 @@
           @LayerOperation_exec="LayerOperation_exec"
         ></layer-operation>
          -->
+        </div>
       </div>
-    </div>
     </Transition>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref,shallowRef } from "@vue/reactivity";
+import { reactive, ref, shallowRef } from "@vue/reactivity";
 import { computed, provide } from "@vue/runtime-core";
 import Padding from "./components/padding.vue";
 import conv2d from "./components/conv2d.vue";
 import CalOperation from "./components/CalculateOperation.vue";
 import CalOperationValue from "./components/CalculateOperationValue.vue";
 import LayerOperation from "./components/LayerOperation.vue";
+import Transform from "./components/Transform.vue";
 const emits = defineEmits(["renderMain", "LayerOperation_exec"]);
 const props = defineProps(["layer", "canvansid", "LayerIndex"]);
 
@@ -79,18 +90,15 @@ const props = defineProps(["layer", "canvansid", "LayerIndex"]);
 let showDetail = ref(true);
 
 //manage the selectbox and loaded Components
-let select_option = shallowRef(Padding);
+let select_option = shallowRef(LayerOperation);
 let operation = [
   {
-    name: "Padding",
-    component: Padding,
+    name: "Layer Operation",
+    component: LayerOperation,
   },
+
   {
-    name: "Conv2d",
-    component: conv2d,
-  },
-  {
-    name: "Calculate",
+    name: "Calculate(Matrix)",
     component: CalOperation,
   },
   {
@@ -98,8 +106,16 @@ let operation = [
     component: CalOperationValue,
   },
   {
-    name: "Layer Operation",
-    component: LayerOperation,
+    name: "Transform",
+    component: Transform,
+  },
+  {
+    name: "Padding",
+    component: Padding,
+  },
+  {
+    name: "Conv2d",
+    component: conv2d,
   },
 ];
 </script>
@@ -138,6 +154,18 @@ let operation = [
       * {
         margin: 0.1875rem 0;
         max-width: 7.5rem;
+      }
+      .attr {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        label {
+          margin:0px;
+          display: block;
+          overflow: hidden;
+          font-size: 0.75rem;
+        }
       }
     }
 

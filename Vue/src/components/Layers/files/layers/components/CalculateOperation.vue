@@ -11,7 +11,6 @@
       :list="ALL_Channel_List"
       :label="operation"
       class="BlockMargin"
-      v-show="operation != 'Transpose'"
     ></LabelLayerSelector>
 
     <div>
@@ -32,11 +31,11 @@ import LabelSelector from "./components/LabelSelector.vue";
 import LabelLayerSelector from "./components/LabelLayerSelector.vue";
 const props = defineProps(["layer"]);
 let ImageFileList = inject("ImageFileList");
-const update_thumbnails=inject("update_thumbnails");
+const update_thumbnails = inject("update_thumbnails");
 const { ALL_Channel_List } = ImageFileList;
 let selectedMatrixName = ref("");
 let operation = ref("Select an operation");
-let operations = ["Add", "Sub", "Mul", "Div", "MM", "Transpose"];
+let operations = ["Add", "Sub", "Mul", "Div", "MM"];
 
 let exec_calculate = () => {
   if (props.layer.OptionalAttributes.name == selectedMatrixName.value) {
@@ -46,17 +45,15 @@ let exec_calculate = () => {
     return;
   }
 
-  let selected_martix;
-  if (operation.value != "Transpose"){
-    selected_martix = ALL_Channel_List.find((item) => {
-      if (item.OptionalAttributes.name == selectedMatrixName.value) {
-        return item;
-      }
-    });
+  let selected_martix = ALL_Channel_List.find((item) => {
+    if (item.OptionalAttributes.name == selectedMatrixName.value) {
+      return item;
+    }
+  });
   if (!selected_martix || !operations.includes(operation.value)) {
     alert("Please select an operation and a matrix");
     return;
-  }}
+  }
   switch (operation.value) {
     case "Add":
       props.layer.add(selected_martix);
@@ -73,13 +70,10 @@ let exec_calculate = () => {
     case "MM":
       props.layer.mm(selected_martix);
       break;
-    case "Transpose":
-      props.layer.transpose();
-      break;
   }
-      if(update_thumbnails.if){
-      update_thumbnails.fn()
-    }
+  if (update_thumbnails.if) {
+    update_thumbnails.fn();
+  }
 };
 </script>
 

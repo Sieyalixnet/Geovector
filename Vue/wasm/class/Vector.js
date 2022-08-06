@@ -40,11 +40,13 @@ export class Vector {
         this.ptr = this.get_ptr()//these are static fields, so we need use update function to update them
         this.cols = this.get_cols()
         this.rows = this.get_rows()
+        this.max=this.get_max()
+        this.min=this.get_min()
         this.OptionalAttributes = {}
     }
     //in this part, functions mostly get/set things from WASM
     memoryArray() {
-        return new Float32Array(memory.buffer, this.get_ptr(), this.get_cols() * this.get_rows())
+        return new Float64Array(memory.buffer, this.get_ptr(), this.get_cols() * this.get_rows())
     }
     array() {
         return Array.from(this.memoryArray())
@@ -63,6 +65,12 @@ export class Vector {
     get_rows() {
         return this.Data.get_rows()
     }
+    get_max(){
+        return this.Data.get_max()
+    }
+    get_min(){
+        return this.Data.get_min()
+    }
     get(row, col) { return this.Data.get(row, col) }
     set(row, col, value) { this.Data.set(row, col, value) }
     get_index(index) { return this.Data.get_index(index) }
@@ -75,10 +83,12 @@ export class Vector {
         return this.Data.conv2d_array(kernel, stride)
     }
 
-    update() {
+    update() {//If the operation do not change the width or height, should not use this function to update the instance.
         this.ptr = this.get_ptr()
         this.cols = this.get_cols()
         this.rows = this.get_rows()
+        this.max = this.get_max()
+        this.min = this.get_min()
     }
     transpose() {
         this.Data.transpose()
@@ -86,34 +96,41 @@ export class Vector {
     }
     mul(vector) {
         this.Data.mul(vector.Data)
+        this.update()
     }
     sub(vector) {
         this.Data.sub(vector.Data)
+        this.update()
     }
     add(vector) {
         this.Data.add(vector.Data)
+        this.update()
     }
     div(vector) {
         this.Data.div(vector.Data)
+        this.update()
     }
     mul_value(value) {
         this.Data.mul_value(value)
+        this.update()
     }
     sub_value(value) {
         this.Data.sub_value(value)
+        this.update()
     }
 
     add_value(value) {
         this.Data.add_value(value)
+        this.update()
     }
 
     div_value(value) {
         this.Data.div_value(value)
+        this.update()
     }
-
-
     mm(vector) {
         this.Data.mm(vector.Data)
+        this.update()
     }
     padding(padding_value) {
         this.Data.padding(padding_value);
@@ -121,6 +138,32 @@ export class Vector {
     }
     padding_times(padding_value, times) {
         this.Data.padding_times(padding_value, times);
+        this.update()
+    }
+    normalize(type){
+        let types = ["min_max","z_score"]
+        if(types.includes(type)){
+        this.Data.normalize(type)}
+        this.update()
+    }
+    reflect_to(min,max){
+        this.Data.reflect_to(min,max)
+        this.update()
+    }
+    rescale_to(size){
+        let ratio=1;
+        if (this.rows > size || this.cols > size) {
+            ratio = this.rows > this.cols ? Math.ceil(this.rows / size) : Math.ceil(this.cols / size)
+        }
+        this.Data.rescale_to(ratio)
+        this.update()
+    }
+    reverse_horizontal(){
+        this.Data.reverse_horizontal()
+        this.update()
+    }
+    reverse_vertical(){
+        this.Data.reverse_vertical()
         this.update()
     }
     //TODO description
@@ -164,7 +207,7 @@ export class Vector {
 }
 
 function __render__(Vector,reflect){
-    let data = Vector.array().flat()
+    let data = Vector.array()
     console.log(data.length)
     if (reflect) {
         data = reflect_to(data, 0.0, 255.0);
