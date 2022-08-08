@@ -1,25 +1,7 @@
 <template>
   <div id="ImageFileContent">
-    {{ ImageFileList.List }}
     <Upload></Upload>
-    <div style="width: 100%">
-      <div
-        :style="
-          ImageFileList.List.length > 0 ? 'overflow: scroll' : 'overflow:none'
-        "
-        id="main_canvas_div"
-      >
-        <canvas id="main_canvas"></canvas>
-      </div>
-
-      <div id="transform_div">
-        <button @click="zoom_add(0.1)">+</button
-        ><button @click="zoom_add(-0.1)">-</button
-        ><button @click="zoom_reset()">
-          Zoom: {{ Math.round(main_canvas_size.size * 10) / 10 }}
-        </button>
-      </div>
-    </div>
+    <MainCanvas></MainCanvas>
     <div id="ImageFileContentFileOperation"><file-operation></file-operation></div>
     <div
       id="ImageFileContentFile"
@@ -34,6 +16,7 @@
 <script setup>
 import { reactive } from "@vue/reactivity";
 import { computed, provide, watch } from "@vue/runtime-core";
+import MainCanvas from "./components/MainCanvas.vue";
 import Upload from "./components/Upload.vue";
 import File from "./files/File.vue";
 import FileOperation from "./files/FileOperation.vue";
@@ -43,10 +26,22 @@ let ImageFileList = reactive({ List: [], ALL_Channel_List: [] });
 //   let width = canvas_div.style.width
 //   return 0.5*width;
 // })
-let main_canvas_size = reactive({
-  size: 1,
+
+let MouseCanvasPosition = reactive({
+  x: 0,
+  y: 0,
+  value:0,
 });
 
+let lastRenderedLayer = reactive({
+  file: undefined,
+  layer: undefined,
+  index: undefined,
+});
+
+
+provide("MouseCanvasPosition",MouseCanvasPosition);
+provide("lastRenderedLayer",lastRenderedLayer);
 watch(
   () => ImageFileList.List,
   (newValue) => {
@@ -58,25 +53,7 @@ watch(
   },
   { deep: true }
 );
-let zoom_reset = () => {
-  let canvas = document.getElementById("main_canvas");
-  if (canvas) {
-    main_canvas_size.size = 1;
-    canvas.style = `transform: scale(${main_canvas_size.size},${main_canvas_size.size}) translate(0%,0%);`;
-  } else {
-    return;
-  }
-};
-let zoom_add = (delta) => {
-  let canvas = document.getElementById("main_canvas");
-  if (canvas) {
-    main_canvas_size.size += delta;
 
-    canvas.style = `transform-origin:top left;transform: scale(${main_canvas_size.size},${main_canvas_size.size})`;
-  } else {
-    return;
-  }
-};
 provide("ImageFileList", ImageFileList);
 </script>
 
@@ -90,35 +67,7 @@ provide("ImageFileList", ImageFileList);
   align-items: center;
   #ImageFileContentFile,#ImageFileContentFileOperation {
     width: 100%;
-  }
-  #main_canvas_div {
-    max-width: 100%;
-    max-height: 64rem;
-    width: 90vw;
-    height: 45vw;
-    border: 1px #000 solid;
-
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-  }
-  #transform_div {
-    width: 100%;
-
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    button {
-      flex: 1;
-      border-radius: 0px;
-      border-top: 0;
-    }
-    button:nth-child(2) {
-      border-left: 0;
-      border-right: 0;
-    }
-    margin-bottom: 1.25rem;
+    margin-top: 0.625rem;
   }
 }
 </style>
@@ -167,21 +116,22 @@ provide("ImageFileList", ImageFileList);
 }
 
 .slide-fade-enter-active {
-  transition: all 0.3s ease-out;
+  transition: all 0.2s ease-out;
 }
 
 .slide-fade-leave-active {
-  transition: all 0.4s cubic-bezier(0.5, 0.5, 0.8, 1);
+  transition: all 0.2s cubic-bezier(0.5, 0.5, 0.8, 1);
 }
 
 .slide-fade-enter-from,
 .slide-fade-leave-to {
-  transform: translateX(20px);
+  transform-origin:top;
+  transform: translateX(20px) scale(0);
   opacity: 0;
 }
 
 .fade-enter-active {
-  transition: all 0.3s ease-out;
+  transition: all 0.1s ease-out;
 }
 
 .fade-enter-from,

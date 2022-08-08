@@ -1,37 +1,54 @@
 <template>
-  <!-- <canvas id="canvas"></canvas> -->
   <button @click="input">Browse You File!</button>
 </template>
 
 <script setup>
 import { inject } from "vue";
 let ImageFileList = inject("ImageFileList");
+const { List } = ImageFileList;
 let WASM_Module = inject("WASM_Module");
 let input = () => {
   var __temp_InputElement__ = document.createElement("input");
   __temp_InputElement__.addEventListener("change", HandleChangeFile, false);
   __temp_InputElement__.type = "file";
-  __temp_InputElement__.accept = "image/*,application/json",
-  __temp_InputElement__.click();
+  (__temp_InputElement__.accept = "image/png,image/jpeg,application/json"),
+    __temp_InputElement__.click();
 };
 
 function HandleChangeFile(e) {
-  var file = e.target.files[0];
+  let file = e.target.files[0];
   let name = file.name;
-  if (!/image\/\w+/.test(file.type)) {
-    alert("Image only.");
-    return false;
-  }
-  var fileReader = new FileReader();
+  let fileReader = new FileReader();
+  let permittedImageFormat = ["image/png", "image/jpeg"];
   try {
-    fileReader.readAsDataURL(file);
-    fileReader.onload = function (e) {
-      renderCanvas(this.result, name);
-    };
-  } catch (_) {
+    if (permittedImageFormat.includes(String(file.type))) {
+      fileReader.readAsDataURL(file);
+      fileReader.onload = function (e) {
+        renderCanvas(this.result, name);
+      };
+    } else if (String(file.type) == "application/json") {
+      fileReader.readAsText(file);
+      fileReader.onload = function (e) {
+        parseJSON(this.result);
+      };
+    }
+  } catch (e) {
     alert("This format is not supported.");
   }
 }
+function parseJSON(json) {
+  let JSONFilesObject = JSON.parse(json);
+  for (let item of JSONFilesObject.files) {
+    let sameFile = List.find((x) => x.name == item.filename);
+    if (!sameFile) {
+      let result = WASM_Module.WASM.createImageVector_JSON(item);
+      List.push(result);
+    } else {
+      sameFile.add_List_JSON(item);
+    }
+  }
+}
+
 function renderCanvas(ImageSRC, name) {
   let canvas = document.createElement("canvas");
   let ctx = canvas.getContext("2d");
@@ -47,9 +64,9 @@ function renderCanvas(ImageSRC, name) {
       img.height
     );
     result.set_name(name + Date.now());
-    ImageFileList.List.push(result);
-    if(canvas){
-      console.log("removed")
+    List.push(result);
+    if (canvas) {
+      console.log("removed");
       canvas.remove();
     }
   };
@@ -61,7 +78,6 @@ button {
   border-radius: 0px !important;
   width: 100%;
   height: 1.875rem;
-  margin: 0 0 1.25rem 0;
+  margin: 0 0 10px 0;
 }
-
 </style>

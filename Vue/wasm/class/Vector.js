@@ -1,6 +1,8 @@
 import { BaseVector } from "geo-vector";
 import { memory } from "geo-vector/geo_vector_bg.wasm";
-import { reshape,reflect_to } from "../utils/array";
+import { reshape, reflect_to } from "../utils/array";
+import { downloadImage, createCanvas } from "../utils/canvas";
+import { downloadJSON } from "../utils/text";
 
 export function createVector(array, rows, cols) {//rows->height, cols->width
     const data = new Vector(array, rows, cols);
@@ -40,8 +42,8 @@ export class Vector {
         this.ptr = this.get_ptr()//these are static fields, so we need use update function to update them
         this.cols = this.get_cols()
         this.rows = this.get_rows()
-        this.max=this.get_max()
-        this.min=this.get_min()
+        this.max = this.get_max()
+        this.min = this.get_min()
         this.OptionalAttributes = {}
     }
     //in this part, functions mostly get/set things from WASM
@@ -51,7 +53,7 @@ export class Vector {
     array() {
         return Array.from(this.memoryArray())
     }
-    drop(){
+    drop() {
         this.Data.clear()
         this.update()
         this.Data.free()
@@ -65,19 +67,32 @@ export class Vector {
     get_rows() {
         return this.Data.get_rows()
     }
-    get_max(){
+    get_max() {
         return this.Data.get_max()
     }
-    get_min(){
+    get_min() {
         return this.Data.get_min()
     }
-    get(row, col) { return this.Data.get(row, col) }
+    // get(row, col) { return this.Data.get(row, col) }//leads to memory leak
+    get(row, col) {
+        let position = row * this.cols + col
+        if (position < this.memoryArray().length) {
+            return this.memoryArray()[position]
+        }
+    }
     set(row, col, value) { this.Data.set(row, col, value) }
-    get_index(index) { return this.Data.get_index(index) }
+    // get_index(index) { return this.Data.get_index(index) }// leads to memory leak
+    get_index(index) {
+        if (index < this.memoryArray().length) {
+            return this.memoryArray()[index]
+        }
+    }
     set_index(index, value) { this.Data.set_index(index, value) }
     conv2d(kernel, stride) {
+        let date = Date.now()
         this.Data.conv2d(kernel, stride)//kernel should reshape in one dimension
         this.update()
+        console.log("conv2d:", Date.now() - date, "ms")
     }
     conv2d_array(kernel, stride) {//this whill return a 1-dimension array
         return this.Data.conv2d_array(kernel, stride)
@@ -140,29 +155,30 @@ export class Vector {
         this.Data.padding_times(padding_value, times);
         this.update()
     }
-    normalize(type){
-        let types = ["min_max","z_score"]
-        if(types.includes(type)){
-        this.Data.normalize(type)}
+    normalize(type) {
+        let types = ["min_max", "z_score"]
+        if (types.includes(type)) {
+            this.Data.normalize(type)
+        }
         this.update()
     }
-    reflect_to(min,max){
-        this.Data.reflect_to(min,max)
+    reflect_to(min, max) {
+        this.Data.reflect_to(min, max)
         this.update()
     }
-    rescale_to(size){
-        let ratio=1;
+    rescale_to(size) {
+        let ratio = 1;
         if (this.rows > size || this.cols > size) {
             ratio = this.rows > this.cols ? Math.ceil(this.rows / size) : Math.ceil(this.cols / size)
         }
         this.Data.rescale_to(ratio)
         this.update()
     }
-    reverse_horizontal(){
+    reverse_horizontal() {
         this.Data.reverse_horizontal()
         this.update()
     }
-    reverse_vertical(){
+    reverse_vertical() {
         this.Data.reverse_vertical()
         this.update()
     }
@@ -174,11 +190,11 @@ export class Vector {
             ratio = this.rows > this.cols ? Math.ceil(this.rows / thumbnails_size) : Math.ceil(this.cols / thumbnails_size)
         }
         let canvas = document.getElementById(canvasID)
-        if(!canvas){return;}
+        if (!canvas) { return; }
         let ctx = canvas.getContext('2d')
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         let date = Date.now()
-        let temp = __render_thumbnails__(this,ratio, reflect)
+        let temp = __render_thumbnails__(this, ratio, reflect)
         let imageData = new ImageData(Uint8ClampedArray.from(temp), Math.ceil(this.cols / ratio), Math.ceil(this.rows / ratio), { colorSpace: "srgb" })
         console.log(`${Date.now() - date}ms`);
         ctx.putImageData(imageData, (thumbnails_size - Math.ceil(this.cols / ratio)) / 2, (thumbnails_size - Math.ceil(this.rows / ratio)) / 2)
@@ -187,7 +203,7 @@ export class Vector {
     }
     render(canvasID, reflect = true) {
         let canvas = document.getElementById(canvasID)
-        if(!canvas){return;}
+        if (!canvas) { return; }
         let ctx = canvas.getContext('2d')
 
         ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -197,44 +213,83 @@ export class Vector {
         let date = Date.now()
         let data = __render__(this, reflect)
 
-        let imageData = new ImageData(Uint8ClampedArray.from(data), this.cols, this.rows,{colorSpace:"srgb"})
+        let imageData = new ImageData(Uint8ClampedArray.from(data), this.cols, this.rows, { colorSpace: "srgb" })
         // let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render(reflect)), this.cols, this.rows, { colorSpace: "srgb" })
         console.log(`${Date.now() - date}ms`);
         ctx.putImageData(imageData, 0, 0)
 
 
     }
+
+    render_to_downlaod() {
+        this.update()
+        let data = __render__(this, false)
+        let canvas = createCanvas(Uint8ClampedArray.from(data), this.cols, this.rows)
+        downloadImage(canvas)
+    }
+    json_to_download(filename) {//download this layer only
+        this.update()
+        let Imagefile = {
+            files: [{
+                filename: filename,
+                layers: [
+                    this.createLayerJSON()
+                ]
+            }]
+
+        }
+        let json = JSON.stringify(Imagefile);
+        // console.log(json)
+        // console.log(JSON.parse(json))
+        downloadJSON(json)
+    }
+
+    createLayerJSON() { //create an object that can be used to download
+        this.update()
+        return {
+            "name": this.OptionalAttributes.name,
+            "cols": this.cols,
+            "rows": this.rows,
+            "data": this.array()
+        }
+    }
 }
 
-function __render__(Vector,reflect){
-    let data = Vector.array()
-    console.log(data.length)
+function __render__(Vector, reflect) {
+    let data_reflected
+    let data = Vector.memoryArray()
     if (reflect) {
-        data = reflect_to(data, 0.0, 255.0);
+        data_reflected = reflect_to(data, 0.0, 255.0);
+    } else {
+        data_reflected = data
     }
-    return (data.map((value) => { return [value,value,value,255] })).flat()
+
+    let result = []
+    for (let i = 0; i < data_reflected.length; i++) {
+        result.push(data_reflected[i], data_reflected[i], data_reflected[i], 255)
+    }
+    return result
 
 }
 
-function __render_thumbnails__(Vector, ratio, reflect){
-    console.log(Vector)
-        let temp = reshape(Vector.array(),[Vector.get_rows(),-1]);
-        let temp_rows= [];
-        for (let i=0;i < temp.length;i++) {
-            if (i % ratio == 0) {
-                let new_row = [];
-                for (let j=0;j< temp[i].length;j++ ){
-                    if (j % ratio == 0) {
-                        new_row.push(temp[i][j]);
-                    }
+function __render_thumbnails__(Vector, ratio, reflect) {
+    let temp = reshape(Vector.memoryArray(), [Vector.get_rows(), -1]);
+    let temp_rows = [];
+    for (let i = 0; i < temp.length; i++) {
+        if (i % ratio == 0) {
+            let new_row = [];
+            for (let j = 0; j < temp[i].length; j++) {
+                if (j % ratio == 0) {
+                    new_row.push(temp[i][j]);
                 }
-                temp_rows.push(new_row);
             }
+            temp_rows.push(new_row);
         }
-        temp_rows = temp_rows.flat();
-        if (reflect) {
-            temp_rows = reflect_to(temp_rows, 0.0, 255.0);
-        }
-        let result = (temp_rows.map((value) => { return [value,value,value,255] })).flat()
-        return result
     }
+    temp_rows = temp_rows.flat();
+    if (reflect) {
+        temp_rows = reflect_to(temp_rows, 0.0, 255.0);
+    }
+    let result = (temp_rows.map((value) => { return [value, value, value, 255] })).flat()
+    return result
+}

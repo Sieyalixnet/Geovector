@@ -1,5 +1,5 @@
 <template>
-  <div id="mmContent">
+  <div id="transformContent">
     <LabelSelector
       v-model:value="operation"
       :list="operations"
@@ -75,7 +75,7 @@ let exec_calculate = () => {
 </script>
 
 <style lang="scss" scoped>
-#mmContent {
+#transformContent {
   display: flex;
   flex-direction: row;
   align-items: center;

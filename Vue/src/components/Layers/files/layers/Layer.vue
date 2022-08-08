@@ -128,8 +128,10 @@ let operation = [
     overflow: scroll;
   }
   .OmitInput {
+    display: flex;
     input {
-      width: 6.5625rem;
+      width: 100%;
+      max-width: 13.5rem;
     }
     button {
       border-radius: 0 !important;

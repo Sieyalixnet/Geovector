@@ -54,17 +54,29 @@ impl BaseVector {
     //PARTS: Some getter and Setter
     pub fn set(&mut self, rows: usize, cols: usize, set_data: f64) {
         let position = rows * self.total_cols + cols;
-        self.data[position] = set_data;
+        if(position<self.data.len()) {
+            self.data[position] = set_data;
+        }
     }
     pub fn get(&self, rows: usize, cols: usize) -> f64 {
         let position = rows * self.total_cols + cols;
-        return self.data[position];
+        let result = self.data.get(position);
+        match result {
+            Some(result) => *result,
+            None => 0.0,
+        }
     }
     pub fn set_index(&mut self, index: usize, set_data: f64) {
-        self.data[index] = set_data;
+        if(index<self.data.len()) {
+            self.data[index] = set_data;
+        }
     }
     pub fn get_index(&self, index: usize) -> f64 {
-        self.data[index]
+        let result = self.data.get(index);
+        match result {
+            Some(result) => *result,
+            None => 0.0,
+        }
     }
 
     pub fn get_rows(&self) -> usize {
@@ -82,16 +94,15 @@ impl BaseVector {
     pub fn total_rows(&self) -> usize {
         self.total_rows
     }
-    pub fn get_max(&self)-> f64{
+    pub fn get_max(&self) -> f64 {
         let data = self.data.clone();
         let max = data.iter().cloned().fold(std::f64::MIN, |a, b| a.max(b));
         max
     }
-    pub fn get_min(&self)-> f64{
+    pub fn get_min(&self) -> f64 {
         let data = self.data.clone();
         let min = data.iter().cloned().fold(std::f64::MAX, |a, b| a.min(b));
         min
-
     }
     //PARTS: matrix operation
     //in this part, if some operation will change the shape of the matrix, we should also modify the total_rows and total_cols manually.
@@ -350,7 +361,7 @@ impl BaseVector {
         for i in 0..temp.len() {
             result.push(temp[i].clone().into_iter().rev().collect());
         }
-        self.data=result.into_iter().flat_map(|x| x).collect();
+        self.data = result.into_iter().flat_map(|x| x).collect();
     }
 
     // //PARTS: Outputs
@@ -569,7 +580,7 @@ mod tests {
         assert_eq!(
             a.get_data().iter().fold(std::f64::MIN, |a, b| a.max(*b)),
             255.0
-        );  
+        );
     }
 
     #[test]
@@ -601,5 +612,4 @@ mod tests {
         assert_eq!(b.get_data(), vec![4.0, 5.0, 6.0, 1.0, 2.0, 3.0]);
         println!("{:?}", b.clone().reshape(a.total_cols));
     }
-
 }

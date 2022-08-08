@@ -35,7 +35,7 @@ const update_thumbnails=inject("update_thumbnails");
 const { List } = ImageFileList;
 let SelectedFile = ref("");
 let operation = ref("Select an operation");
-let operations = ["Copy", "Upward", "Downward", "Delete","Move To"];
+let operations = ["Copy", "Upward", "Downward", "Delete","Move To","Download Image","Download JSON"];
 const props = defineProps(["layer","LayerIndex"]);
 
 let exec_operation = async () => {
@@ -66,6 +66,12 @@ let exec_operation = async () => {
       );
       file.delete(index);
       break;
+    case "Download Image":
+      props.layer.render_to_downlaod();
+      break
+    case "Download JSON":
+      props.layer.json_to_download(file.name);
+      break
   }
     if(update_thumbnails.if){
       update_thumbnails.fn()
