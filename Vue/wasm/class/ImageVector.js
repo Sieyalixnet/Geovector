@@ -8,6 +8,9 @@ export class ImageVector {
     }
     set_List(VectorList) { this.ChannelList = VectorList }
     add_List(Vector) {
+        if(!Vector.OptionalAttributes.name){
+            Vector.OptionalAttributes.name=`${this.name}_${Date.now()}`
+        }
         this.ChannelList.push(Vector)
     }
     get_Vector(index) { return this.ChannelList[index] }

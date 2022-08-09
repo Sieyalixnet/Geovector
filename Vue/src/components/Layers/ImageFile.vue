@@ -1,14 +1,19 @@
 <template>
   <div id="ImageFileContent">
     <Upload></Upload>
-    <MainCanvas></MainCanvas>
-    <div id="ImageFileContentFileOperation"><file-operation></file-operation></div>
-    <div
-      id="ImageFileContentFile"
-      v-for="(item, index) in ImageFileList.List"
-      :key="index"
-    >
-      <File :file="item"></File>
+    <Introduction v-if="ImageFileList.List.length==0"></Introduction>
+    <MainCanvas v-if="ImageFileList.List.length>0"></MainCanvas>
+    <div v-if="ImageFileList.List.length>0" id="FileAndFileOperation">
+      <div id="ImageFileContentFileOperation">
+        <file-operation></file-operation>
+      </div>
+      <div id="ImageFileContentFile">
+        <File
+          v-for="(item, index) in ImageFileList.List"
+          :key="index"
+          :file="item"
+        ></File>
+      </div>
     </div>
   </div>
 </template>
@@ -16,6 +21,7 @@
 <script setup>
 import { reactive } from "@vue/reactivity";
 import { computed, provide, watch } from "@vue/runtime-core";
+import Introduction from "./components/Introduction.vue";
 import MainCanvas from "./components/MainCanvas.vue";
 import Upload from "./components/Upload.vue";
 import File from "./files/File.vue";
@@ -30,7 +36,7 @@ let ImageFileList = reactive({ List: [], ALL_Channel_List: [] });
 let MouseCanvasPosition = reactive({
   x: 0,
   y: 0,
-  value:0,
+  value: 0,
 });
 
 let lastRenderedLayer = reactive({
@@ -39,9 +45,8 @@ let lastRenderedLayer = reactive({
   index: undefined,
 });
 
-
-provide("MouseCanvasPosition",MouseCanvasPosition);
-provide("lastRenderedLayer",lastRenderedLayer);
+provide("MouseCanvasPosition", MouseCanvasPosition);
+provide("lastRenderedLayer", lastRenderedLayer);
 watch(
   () => ImageFileList.List,
   (newValue) => {
@@ -65,9 +70,20 @@ provide("ImageFileList", ImageFileList);
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  #ImageFileContentFile,#ImageFileContentFileOperation {
+  #FileAndFileOperation {
     width: 100%;
-    margin-top: 0.625rem;
+
+    #ImageFileContentFile,
+    #ImageFileContentFileOperation {
+      width: 100%;
+      margin-top: 0.625rem;
+    }
+    #ImageFileContentFileOperation {
+      flex: 1;
+    }
+    #ImageFileContentFile {
+      flex: 3;
+    }
   }
 }
 </style>
@@ -85,7 +101,7 @@ provide("ImageFileList", ImageFileList);
     border: 1px solid rgba(0, 80, 30, 0.7);
     border-radius: 0.25em;
     background: rgba(127, 202, 136, 0.3);
-    text-shadow: 0 0 3px #000, 0 0 1px #000;
+    text-shadow: 0 0 3px #000, 0 0 1px #000, 0 0 2px #000, 0 0 4px #444;
     color: #fff;
   }
   button:hover {
@@ -125,7 +141,7 @@ provide("ImageFileList", ImageFileList);
 
 .slide-fade-enter-from,
 .slide-fade-leave-to {
-  transform-origin:top;
+  transform-origin: top;
   transform: translateX(20px) scale(0);
   opacity: 0;
 }

@@ -1,5 +1,5 @@
 <template>
-  <button @click="input">Browse You File!</button>
+  <button @click="input">Browse You Image!</button>
 </template>
 
 <script setup>

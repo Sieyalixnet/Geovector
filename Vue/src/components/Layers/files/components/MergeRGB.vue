@@ -41,18 +41,36 @@ import { inject, ref } from "vue";
 import LabelSelector from "../layers/components/components/LabelSelector.vue";
 import LabelLayerSelector from "../layers/components/components/LabelLayerSelector.vue";
 let ImageFileList = inject("ImageFileList");
+let lastRenderedLayer = inject("lastRenderedLayer");
 const { ALL_Channel_List } = ImageFileList;
 //let selectedMatrixName = ref("");
-let selectedLayersName = ref([null,null,null,null]);
-let WASM_Module=inject("WASM_Module");
-const {WASM} = WASM_Module
+let selectedLayersName = ref([null, null, null, null]);
+let WASM_Module = inject("WASM_Module");
+const { WASM } = WASM_Module;
 let exec_calculate = () => {
-  console.log(WASM)
-    let R = ALL_Channel_List.find((item) => item.OptionalAttributes.name === (selectedLayersName.value)[0])
-    let G = ALL_Channel_List.find((item) => item.OptionalAttributes.name === (selectedLayersName.value)[1])
-    let B = ALL_Channel_List.find((item) => item.OptionalAttributes.name === (selectedLayersName.value)[2])
-    let A = ALL_Channel_List.find((item) => item.OptionalAttributes.name === (selectedLayersName.value)[3])
-    WASM.renderRGBA('main_canvas',{R,G,B,A})
+  // console.log(WASM);
+  let R = ALL_Channel_List.find(
+    (item) => item.OptionalAttributes.name === selectedLayersName.value[0]
+  );
+  let G = ALL_Channel_List.find(
+    (item) => item.OptionalAttributes.name === selectedLayersName.value[1]
+  );
+  let B = ALL_Channel_List.find(
+    (item) => item.OptionalAttributes.name === selectedLayersName.value[2]
+  );
+  let A = ALL_Channel_List.find(
+    (item) => item.OptionalAttributes.name === selectedLayersName.value[3]
+  );
+  if (R && G && B) {
+    WASM.renderRGBA("main_canvas", { R, G, B, A });
+    lastRenderedLayer.file = undefined;
+    lastRenderedLayer.index = undefined;
+    if (R && G && B && A) {
+      lastRenderedLayer.layer = [R, G, B, A];
+    } else if (R && G && B) {
+      lastRenderedLayer.layer = [R, G, B];
+    }
+  }
 };
 </script>
 

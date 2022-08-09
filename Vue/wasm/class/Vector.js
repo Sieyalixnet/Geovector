@@ -14,12 +14,12 @@ function VectorHandler(target) {
         get(target, key) {
             let res = Reflect.get(target, key);
             // console.log(target.OptionalAttributes)
-            console.log('get')
+            // console.log('get')
             return res
         },
         set(target, key, value) {
             let res = Reflect.set(target, key, value);
-            console.log('set')
+            // console.log('set')
             return res
         }
     }
@@ -80,14 +80,14 @@ export class Vector {
             return this.memoryArray()[position]
         }
     }
-    set(row, col, value) { this.Data.set(row, col, value) }
+    set(row, col, value) { this.Data.set(row, col, value);this.update() }
     // get_index(index) { return this.Data.get_index(index) }// leads to memory leak
     get_index(index) {
         if (index < this.memoryArray().length) {
             return this.memoryArray()[index]
         }
     }
-    set_index(index, value) { this.Data.set_index(index, value) }
+    set_index(index, value) { this.Data.set_index(index, value);this.update() }
     conv2d(kernel, stride) {
         let date = Date.now()
         this.Data.conv2d(kernel, stride)//kernel should reshape in one dimension

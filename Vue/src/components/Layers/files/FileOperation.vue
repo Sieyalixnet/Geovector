@@ -31,6 +31,8 @@ import LabelSelector from "./layers/components/components/LabelSelector.vue";
 import MergeRGB from "./components/MergeRGB.vue";
 import DownloadData from "./components/DownloadData.vue";
 import DownloadImage from "./components/DownloadImage.vue";
+import CreateFile from "./components/CreateFile.vue"
+import CreateLayer from "./components/CreateLayer.vue"
 let showFileOperation = ref(false);
 let select_option = shallowRef(MergeRGB);
 let operation = [
@@ -46,6 +48,16 @@ let operation = [
     name: "Download Main Image",
     component: DownloadImage,
   },
+  {
+    name:"Create a New Empty File",
+    component:CreateFile
+
+  },
+  {
+    name:"Create a New Layer",
+    component:CreateLayer
+
+  }
 ];
 </script>
 

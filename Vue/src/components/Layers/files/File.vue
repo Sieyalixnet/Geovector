@@ -1,7 +1,7 @@
 <template>
   <div id="FileContent">
     <div class="filename" @click="showLayers = !showLayers">
-      <label>FileName</label>
+      <label>File Name</label>
       <input type="text" v-model="props.file.name" v-on:click.stop />
     </div>
     <Transition name="slide-fade">
