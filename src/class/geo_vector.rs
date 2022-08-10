@@ -54,7 +54,7 @@ impl BaseVector {
     //PARTS: Some getter and Setter
     pub fn set(&mut self, rows: usize, cols: usize, set_data: f64) {
         let position = rows * self.total_cols + cols;
-        if(position<self.data.len()) {
+        if position < self.data.len() {
             self.data[position] = set_data;
         }
     }
@@ -67,7 +67,7 @@ impl BaseVector {
         }
     }
     pub fn set_index(&mut self, index: usize, set_data: f64) {
-        if(index<self.data.len()) {
+        if (index < self.data.len()) {
             self.data[index] = set_data;
         }
     }
@@ -175,6 +175,50 @@ impl BaseVector {
             self.data[i] /= b;
         }
     }
+    pub fn replace(&mut self, min_range: f64, max_range: f64, new_value: f64) {
+        self.data = self
+            .data
+            .iter()
+            .map(|x| {
+                if x >= &min_range && x <= &max_range {
+                    new_value
+                } else {
+                    *x
+                }
+            })
+            .collect();
+        // for i in 0..self.data.len() {
+        //     if self.data[i] >= min_range && self.data[i] <= max_range {
+        //         self.data[i] = new_value;
+        //     }
+        // }
+    }
+    pub fn range_reflect(
+        &mut self,
+        min_range: f64,
+        max_range: f64,
+        min_reflect: f64,
+        max_reflect: f64,
+    ) {
+
+
+        self.data = self
+            .data
+            .iter()
+            .map(|x| {
+                if x >= &min_range && x <= &max_range {
+                    let temp = (x - min_range) / (max_range - min_range);
+                    return temp * (max_reflect - min_reflect) + min_reflect;
+                } else {
+                    *x
+                }
+            })
+            .collect();
+    }
+    pub fn abs(&mut self) {
+        self.data = self.data.iter().map(|x| x.abs()).collect();
+    }
+
     //PARTS: matrix/science calculate
     pub fn padding(&mut self, padding_value: f64) {
         let mut new_data = self.reshape(self.total_cols);
@@ -322,7 +366,7 @@ impl BaseVector {
         let result = data
             .into_iter()
             .map(|x| (x - min) / (max - min))
-            .map(|x| x * (max_reflect + min_reflect) - min_reflect)
+            .map(|x| x * (max_reflect - min_reflect) + min_reflect)
             .collect();
         self.data = result;
     }
@@ -611,5 +655,20 @@ mod tests {
         assert_eq!(b.total_rows, 2);
         assert_eq!(b.get_data(), vec![4.0, 5.0, 6.0, 1.0, 2.0, 3.0]);
         println!("{:?}", b.clone().reshape(a.total_cols));
+    }
+
+    #[test]
+    pub fn replace_abs_test() {
+        let mut a = BaseVector::new(2, 3, vec![-1.0, -2.0, -3.0, -4.0, 5.0, 6.0]);
+        a.replace(5.0, 6.0, 0.0);
+        assert_eq!(a.get_data(), vec![-1.0, -2.0, -3.0, -4.0, 0.0, 0.0]);
+        a.abs();
+        assert_eq!(a.get_data(), vec![1.0, 2.0, 3.0, 4.0, 0.0, 0.0]);
+    }
+    #[test]
+    pub fn range_reflect_test() {
+        let mut a = BaseVector::new(2, 4, vec![-30.0,-20.0, -10.0, 0.0, 10.0, 20.0, 30.0,40.0]);
+        a.range_reflect(-20.0, 20.0, 100.0, 200.0);
+        println!("{:?}", a.get_data());
     }
 }

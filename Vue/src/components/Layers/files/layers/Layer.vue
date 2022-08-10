@@ -29,7 +29,7 @@
           <select v-model="select_option">
             <option
               v-for="(item, index) in operation"
-              :key="index"
+              :key="item.name"
               :value="item.component"
             >
               {{ item.name }}
@@ -124,9 +124,7 @@ let operation = [
 .layerContent {
   width: 100%;
   border: 1px rgba(0, 90, 30, 0.5) solid;
-  @media screen and (orientation: portrait) {
-    overflow: scroll;
-  }
+
   .OmitInput {
     display: flex;
     input {
@@ -139,6 +137,9 @@ let operation = [
     }
   }
   .layerContentDetail {
+    // @media screen and (orientation: portrait) {
+    overflow-x: scroll;
+  // }
     display: flex;
     flex-direction: row;
     justify-content: flex-start;

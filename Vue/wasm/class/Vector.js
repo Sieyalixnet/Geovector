@@ -80,14 +80,14 @@ export class Vector {
             return this.memoryArray()[position]
         }
     }
-    set(row, col, value) { this.Data.set(row, col, value);this.update() }
+    set(row, col, value) { this.Data.set(row, col, value); this.update() }
     // get_index(index) { return this.Data.get_index(index) }// leads to memory leak
     get_index(index) {
         if (index < this.memoryArray().length) {
             return this.memoryArray()[index]
         }
     }
-    set_index(index, value) { this.Data.set_index(index, value);this.update() }
+    set_index(index, value) { this.Data.set_index(index, value); this.update() }
     conv2d(kernel, stride) {
         let date = Date.now()
         this.Data.conv2d(kernel, stride)//kernel should reshape in one dimension
@@ -118,8 +118,10 @@ export class Vector {
         this.update()
     }
     add(vector) {
+        let date = Date.now()
         this.Data.add(vector.Data)
         this.update()
+        console.log("add:", Date.now() - date, "ms")
     }
     div(vector) {
         this.Data.div(vector.Data)
@@ -174,6 +176,18 @@ export class Vector {
         this.Data.rescale_to(ratio)
         this.update()
     }
+    replace(min, max, new_value) {
+        this.Data.replace(min, max, new_value)
+        this.update()
+    }
+    range_reflect(min_range, max_range, min_reflect, max_reflect) {
+        this.Data.range_reflect(min_range, max_range, min_reflect, max_reflect)
+        this.update()
+    }
+    abs() {
+        this.Data.abs()
+        this.update()
+    }
     reverse_horizontal() {
         this.Data.reverse_horizontal()
         this.update()
@@ -215,7 +229,7 @@ export class Vector {
 
         let imageData = new ImageData(Uint8ClampedArray.from(data), this.cols, this.rows, { colorSpace: "srgb" })
         // let imageData = new ImageData(Uint8ClampedArray.from(this.Data.render(reflect)), this.cols, this.rows, { colorSpace: "srgb" })
-        console.log(`${Date.now() - date}ms`);
+        console.log(`Render to Main: ${Date.now() - date}ms`);
         ctx.putImageData(imageData, 0, 0)
 
 

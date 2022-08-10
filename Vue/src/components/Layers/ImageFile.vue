@@ -10,7 +10,7 @@
       <div id="ImageFileContentFile">
         <File
           v-for="(item, index) in ImageFileList.List"
-          :key="index"
+          :key="item.name"
           :file="item"
         ></File>
       </div>
@@ -90,13 +90,18 @@ provide("ImageFileList", ImageFileList);
 
 <style lang="scss">
 #ImageFileContent {
+  * {
+    box-sizing: border-box;
+  }
   select {
     background: none;
     border: 1px solid rgba(0, 80, 30, 0.7);
   }
-  * {
-    box-sizing: border-box;
+  select:focus {
+    border: 1px solid rgba(103, 176, 130, 0.7);
+    animation: blinkBorder ease-in 5s infinite reverse;
   }
+
   button {
     border: 1px solid rgba(0, 80, 30, 0.7);
     border-radius: 0.25em;
@@ -116,17 +121,17 @@ provide("ImageFileList", ImageFileList);
   input:focus {
     background: rgba(220, 255, 220, 0.1);
     border: 1px solid rgba(103, 176, 130, 0.7);
-    animation: blinkBorder ease-in 5s infinite reverse;
+    animation: blinkBorder ease-in 3s infinite reverse;
   }
   @keyframes blinkBorder {
     0% {
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0);
     }
     50% {
-      box-shadow: 0 0 5px rgba(1, 155, 87, 0.8);
+      box-shadow: 0 0 10px rgba(1, 155, 87, 0.8);
     }
     100% {
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0);
     }
   }
 }

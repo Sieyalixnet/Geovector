@@ -68,7 +68,7 @@ let styleConcat = computed(() => {
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  padding:0.625rem;
+
   h1,
   p {
     text-shadow: 0 0 5px #000, 0 0 3px #000, 0 0 1px #000;

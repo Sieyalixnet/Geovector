@@ -4,11 +4,11 @@
       <label>File Operation</label>
     </div>
     <Transition name="slide-fade">
-      <div  style="width: 100%" v-if="showFileOperation">
+      <div style="width: 100%" v-if="showFileOperation">
         <select v-model="select_option" class="FileOperationSelector">
           <option
             v-for="(item, index) in operation"
-            :key="index"
+            :key="item.name"
             :value="item.component"
           >
             {{ item.name }}
@@ -31,33 +31,37 @@ import LabelSelector from "./layers/components/components/LabelSelector.vue";
 import MergeRGB from "./components/MergeRGB.vue";
 import DownloadData from "./components/DownloadData.vue";
 import DownloadImage from "./components/DownloadImage.vue";
-import CreateFile from "./components/CreateFile.vue"
-import CreateLayer from "./components/CreateLayer.vue"
+import CreateFile from "./components/CreateFile.vue";
+import CreateLayer from "./components/CreateLayer.vue";
+import RemoveFile from "./components/RemoveFile.vue";
 let showFileOperation = ref(false);
 let select_option = shallowRef(MergeRGB);
 let operation = [
   {
-    name: "Merge to RGBA image",
+    name: "Merge to RGBA Image",
     component: MergeRGB,
+  },
+
+  {
+    name: "Download Main Image",
+    component: DownloadImage,
   },
   {
     name: "Download JSON data",
     component: DownloadData,
   },
   {
-    name: "Download Main Image",
-    component: DownloadImage,
+    name: "Create a New Empty File",
+    component: CreateFile,
   },
   {
-    name:"Create a New Empty File",
-    component:CreateFile
-
+    name: "Create a New Layer",
+    component: CreateLayer,
   },
   {
-    name:"Create a New Layer",
-    component:CreateLayer
-
-  }
+    name: "Remove File",
+    component: RemoveFile,
+  },
 ];
 </script>
 
@@ -67,13 +71,13 @@ let operation = [
   border: 1px solid rgba(0, 90, 40, 0.5);
   border-radius: 0.3125rem;
   transition: height 10s;
-  .FileOperationSelector{
+  .FileOperationSelector {
     margin-left: 5px;
-  
-  border: 1px solid rgba(0, 90, 40, 0.5);
+
+    border: 1px solid rgba(0, 90, 40, 0.5);
   }
   .FileOperationOption {
-  border: 1px solid rgba(0, 90, 40, 0.5);
+    border: 1px solid rgba(0, 90, 40, 0.5);
     display: flex;
     flex-direction: row;
     justify-content: center;

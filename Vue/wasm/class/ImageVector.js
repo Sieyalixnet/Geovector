@@ -46,8 +46,16 @@ export class ImageVector {
     delete(index) {
         this.ChannelList[index].drop()
         this.ChannelList[index] = null
-        console.log(this.ChannelList[index])
+        //console.log(this.ChannelList[index])
         this.ChannelList.splice(index, 1)
+    }
+    delete_all(){
+        for(let index in this.ChannelList){
+            this.ChannelList[index].drop()
+            this.ChannelList[index] = null
+            //console.log(`${this.ChannelList[index].OptionalAttributes.name} is dropped`)
+        }
+        this.ChannelList = []
     }
     upward(index) {
         let temp = this.ChannelList[index]

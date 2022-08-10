@@ -9,7 +9,7 @@
         <div
           class="layer"
           v-for="(item, index) in props.file.ChannelList"
-          :key="index"
+          :key="item.OptionalAttributes.name"
         >
           <Layer
             @renderMain="render_main"
@@ -44,8 +44,15 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "@vue/reactivity";
-import { onMounted, provide, inject } from "@vue/runtime-core";
+import {
+  onMounted,
+  provide,
+  inject,
+  reactive,
+  ref,
+  watch,
+  nextTick,
+} from "vue";
 import Layer from "./layers/Layer.vue";
 const props = defineProps(["file"]);
 let ImageFileList = inject("ImageFileList");
@@ -68,10 +75,11 @@ provide("update_thumbnails", {
   if: auto_render_thumbails.value,
 });
 
-let render_reflect_click=()=>{//update the thumbnails when the reflect checkbox is clicked
-  render_reflect.value = !render_reflect.value
+let render_reflect_click = () => {
+  //update the thumbnails when the reflect checkbox is clicked
+  render_reflect.value = !render_reflect.value;
   render_thumbnails_to_canvas();
-}
+};
 
 let render_main = (index) => {
   props.file.render_to_main_canvas(index, render_reflect.value);
@@ -79,6 +87,18 @@ let render_main = (index) => {
   lastRenderedLayer.layer = props.file.get_Vector(index);
   lastRenderedLayer.index = index;
 };
+
+watch(
+  () => List,
+  (_) => {
+    nextTick(() => {
+      if (auto_render_thumbails.value) {
+        render_thumbnails_to_canvas();
+      }
+    });
+  },
+  { deep: true }
+);
 </script>
 
 <style lang="scss" scoped>
