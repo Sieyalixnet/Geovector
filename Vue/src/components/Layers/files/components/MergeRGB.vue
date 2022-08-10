@@ -62,15 +62,19 @@ let exec_calculate = () => {
     (item) => item.OptionalAttributes.name === selectedLayersName.value[3]
   );
   if (R && G && B) {
-    WASM.renderRGBA("main_canvas", { R, G, B, A });
+    try{
+    WASM.renderRGBA("main_canvas", { R, G, B, A });}
+    catch(_){
+      alert("These layers's length are not equal.");
+    }
     lastRenderedLayer.file = undefined;
     lastRenderedLayer.index = undefined;
     if (R && G && B && A) {
       lastRenderedLayer.layer = [R, G, B, A];
     } else if (R && G && B) {
       lastRenderedLayer.layer = [R, G, B];
-    }
-  }
+    } 
+  } else {alert("Please select R,G,B channels at least.");}
 };
 </script>
 

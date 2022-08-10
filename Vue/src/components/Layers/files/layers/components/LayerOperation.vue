@@ -58,8 +58,8 @@ let exec_operation = async () => {
     case "Move To":
       //console.log(SelectedFile);
       //console.log(List.find(item => item.name === SelectedFile))
-      console.log(List)
-      console.log(SelectedFile.value)
+      // console.log(List)
+      // console.log(SelectedFile.value)
       let targetList = List.find((item) => item.name === SelectedFile.value)
       targetList.add_List(
        file.__copy__(index)

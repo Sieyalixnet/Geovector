@@ -28,7 +28,7 @@ export class ImageVector {
 
     }
     render_to_main_canvas(index, reflect) {
-        console.log(reflect)
+        // console.log('main reflect:', reflect)
         this.ChannelList[index].render(`main_canvas`, reflect)
     }
     render_to_canvas(reflect) {
@@ -38,8 +38,8 @@ export class ImageVector {
     }
     render_thumbnails_to_canvas(reflect) {
         for (let index in this.ChannelList) {
-            console.log(`${this.name}_${index}`)
-            console.log(reflect)
+            // console.log(`${this.name}_${index}`)
+            // console.log(reflect)
             this.ChannelList[index].render_thumbnails(`${this.name}_${index}`, reflect)
         }
     }
@@ -68,11 +68,15 @@ export class ImageVector {
         this.ChannelList[index + 1] = temp
     }
     copy(index) {
-
         let temp = createVector(this.ChannelList[index].array(), this.ChannelList[index].get_rows(), this.ChannelList[index].get_cols())
         temp.OptionalAttributes.name = `${this.ChannelList[index].OptionalAttributes.name}_copy`
+        let samename = this.ChannelList.find(x=>x.OptionalAttributes.name==temp.OptionalAttributes.name)
+        while(samename){
+            // console.log("loop")
+            temp.OptionalAttributes.name = `${this.ChannelList[index].OptionalAttributes.name}_${String(Math.random()*9999999)}_copy`
+            samename = this.ChannelList.find(x=>x.OptionalAttributes.name==temp.OptionalAttributes.name)
+        }
         this.ChannelList.push(temp)
-
     }
     json_to_download() {
         let layers = this.ChannelList.map(x => x.createLayerJSON())

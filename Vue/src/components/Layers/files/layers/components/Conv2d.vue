@@ -43,9 +43,9 @@ let kernel = reactive({
 let stride = ref(1);
 
 let exec_conv2d = () => {
-  let kernel_final = kernel.kernel.map((x) => Number(x));
+
   if (stride.value > 0) {
-    props.layer.conv2d(kernel_final, stride.value);
+    props.layer.conv2d(kernel.kernel, stride.value);
         if(update_thumbnails.if){
       update_thumbnails.fn()
     }
@@ -64,7 +64,6 @@ let change_list = () => {
   let kernel_value = 0;
 
   let kernel_set = Array.from(new Set(kernel.kernel));
-  console.log(kernel_set);
   if (kernel_set.length == 1) {
     kernel_value = kernel_set[0];
   }

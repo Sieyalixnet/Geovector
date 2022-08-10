@@ -22,7 +22,7 @@ export function renderRGBA(canvasID, channels) { //{R,G,B,A}=channels
 
     let imageData = new ImageData(Uint8ClampedArray.from(data), R.cols, R.rows, { colorSpace: "srgb" })
 
-    console.log(`${Date.now() - date}ms`);
+    console.log(`Merge RGBA and Render to Main: ${Date.now() - date}ms`);
     ctx.putImageData(imageData, 0, 0)
 
 

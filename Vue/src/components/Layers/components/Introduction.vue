@@ -9,10 +9,10 @@
       :justify="`center`"
       :background-color="`rgba(89,${Math.random()*(255-170)+170},122,0.7)`"
       :style="`border: 2px solid rgba(89,${Math.random()*(255-170)+170},122,0.7);`"
-      ><div><p><a v-if="item.title == `Guide`" href="www.sieyalix.net"
+      ><div><p><a v-if="item.title == `Guide`" href="https://sieyalixnet.notion.site/sieyalixnet/GeoVector-fc60d4e4b3084afe9330b7df19d02ef1"
         >中文</a
       ></p><p style=" text-decoration:line-through;"><a v-if="item.title == `Guide`" 
-        >English(provide after official edition publish)</a
+        >English(provide after official edition release)</a
       ></p></div></ShowCard
     >
   </div>
@@ -21,8 +21,8 @@
 import ShowCard from "./component/ShowCard.vue";
 let List = [
   {
-    title: "Fast, Light",
-    text: "With WASM basing on Rust, this application is extremly fast at computating 2-dimension data. It is of ~1MB(<2MB) after packing up.",
+    title: "Fast, \"Light\"",
+    text: "With WASM basing on Rust, this application is extremly fast at computating 2-dimension data. It is of 300KB after packing up.",
   },
   {
     title: "Strong",

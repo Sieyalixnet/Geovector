@@ -51,6 +51,11 @@ let creatVector = reactive({
 let SelectedFile = ref("");
 
 let exec_operation = () => {
+  if(creatVector.cols<=0 || creatVector.rows<=0){
+    alert("Cols and Rows must be greater than 0");
+    return;
+  }
+
   let v = new Array(Number(creatVector.cols) * Number(creatVector.rows)).fill(
     Number(creatVector.value)
   );

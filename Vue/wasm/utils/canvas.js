@@ -9,11 +9,11 @@ export function downloadImage(canvas, remove = true) {
     a.click();
     if (remove) {
         if (canvas) {
-            console.log("download canvas removed")
+            // console.log("download canvas removed")
             canvas.remove();
         }
         if (a) {
-            console.log("a removed")
+            // console.log("a removed")
             canvas.remove();
 
         }

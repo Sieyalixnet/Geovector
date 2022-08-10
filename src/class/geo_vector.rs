@@ -390,7 +390,7 @@ impl BaseVector {
         self.data = temp_rows.into_iter().flat_map(|x| x).collect();
     }
 
-    pub fn reverse_horizontal(&mut self) {
+    pub fn reverse_vertical(&mut self) {
         self.data = self
             .reshape(self.total_cols)
             .into_iter()
@@ -399,7 +399,7 @@ impl BaseVector {
             .collect();
     }
 
-    pub fn reverse_vertical(&mut self) {
+    pub fn reverse_horizontal(&mut self) {
         let temp = self.reshape(self.total_cols);
         let mut result: Vec<Vec<f64>> = vec![];
         for i in 0..temp.len() {
@@ -643,14 +643,14 @@ mod tests {
     #[test]
     pub fn reverse_test() {
         let mut a = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
-        a.reverse_vertical();
+        a.reverse_horizontal();
         assert_eq!(a.total_cols, 3);
         assert_eq!(a.total_rows, 2);
         assert_eq!(a.get_data(), vec![3.0, 2.0, 1.0, 6.0, 5.0, 4.0]);
         println!("{:?}", a.clone().reshape(a.total_cols));
 
         let mut b = BaseVector::new(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
-        b.reverse_horizontal();
+        b.reverse_vertical();
         assert_eq!(b.total_cols, 3);
         assert_eq!(b.total_rows, 2);
         assert_eq!(b.get_data(), vec![4.0, 5.0, 6.0, 1.0, 2.0, 3.0]);

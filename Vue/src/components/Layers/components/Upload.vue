@@ -66,7 +66,7 @@ function renderCanvas(ImageSRC, name) {
     result.set_name(name + Date.now());
     List.push(result);
     if (canvas) {
-      console.log("removed");
+      // console.log("removed");
       canvas.remove();
     }
   };

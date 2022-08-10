@@ -112,6 +112,10 @@ let exec_calculate = () => {
       props.layer.div_value(calculate_value.value[0]);
       break;
     case "Replace":
+      if (calculate_value.value[0] >= calculate_value.value[1]) {
+        alert("Min and Max should be in ascending order");
+        return;
+      }
       props.layer.replace(
         calculate_value.value[0],
         calculate_value.value[1],
@@ -122,6 +126,10 @@ let exec_calculate = () => {
       props.layer.abs();
       break;
     case "Reflect to": {
+      if (calculate_value.value[0] >= calculate_value.value[1]) {
+        alert("Min and Max should be in ascending order");
+        return;
+      }
       let min = Number(calculate_value.value[0]);
       let max = Number(calculate_value.value[1]);
       if (isNaN(min) || isNaN(max) || max - min <= 0) {
@@ -134,6 +142,13 @@ let exec_calculate = () => {
       break;
     }
     case "Range Reflect to": {
+      if (
+        calculate_value.value[0] >= calculate_value.value[1] ||
+        calculate_value.value[2] >= calculate_value.value[3]
+      ) {
+        alert("Min and Max should be in ascending order");
+        return;
+      }
       let min = Number(calculate_value.value[0]);
       let max = Number(calculate_value.value[1]);
       let target_min = Number(calculate_value.value[2]);
@@ -145,7 +160,7 @@ let exec_calculate = () => {
       props.layer.normalize(NormalizeType.value);
       break;
   }
-  console.log(props.layer.array());
+
   if (update_thumbnails.if) {
     update_thumbnails.fn();
   }

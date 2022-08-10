@@ -80,25 +80,27 @@ export class Vector {
             return this.memoryArray()[position]
         }
     }
-    set(row, col, value) { this.Data.set(row, col, value); this.update() }
+    set(row, col, value) { this.Data.set(row, col, Number(value)); this.update() }
     // get_index(index) { return this.Data.get_index(index) }// leads to memory leak
     get_index(index) {
         if (index < this.memoryArray().length) {
             return this.memoryArray()[index]
         }
     }
-    set_index(index, value) { this.Data.set_index(index, value); this.update() }
-    conv2d(kernel, stride) {
+    set_index(index, value) { this.Data.set_index(index, Number(value)); this.update() }
+    conv2d(kernel, stride) {//kernel is mapped as Number in Vue
+        let kernel_final = kernel.map((x) => Number(x));
+
         let date = Date.now()
-        this.Data.conv2d(kernel, stride)//kernel should reshape in one dimension
+        this.Data.conv2d(kernel_final, Number(stride))//kernel should reshape in one dimension
         this.update()
         console.log("conv2d:", Date.now() - date, "ms")
     }
-    conv2d_array(kernel, stride) {//this whill return a 1-dimension array
-        return this.Data.conv2d_array(kernel, stride)
-    }
+    // conv2d_array(kernel, stride) {//this whill return a 1-dimension array
+    //     return this.Data.conv2d_array(kernel, stride)
+    // }
 
-    update() {//If the operation do not change the width or height, should not use this function to update the instance.
+    update() {
         this.ptr = this.get_ptr()
         this.cols = this.get_cols()
         this.rows = this.get_rows()
@@ -127,7 +129,13 @@ export class Vector {
         this.Data.div(vector.Data)
         this.update()
     }
-    mul_value(value) {
+    mm(vector) {
+        this.Data.mm(vector.Data)
+        this.update()
+    }
+
+    
+    mul_value(value) {//These functions is checked.
         this.Data.mul_value(value)
         this.update()
     }
@@ -145,10 +153,7 @@ export class Vector {
         this.Data.div_value(value)
         this.update()
     }
-    mm(vector) {
-        this.Data.mm(vector.Data)
-        this.update()
-    }
+
     padding(padding_value) {
         this.Data.padding(padding_value);
         this.update()
@@ -207,10 +212,10 @@ export class Vector {
         if (!canvas) { return; }
         let ctx = canvas.getContext('2d')
         ctx.clearRect(0, 0, canvas.width, canvas.height)
-        let date = Date.now()
+        // let date = Date.now()
         let temp = __render_thumbnails__(this, ratio, reflect)
         let imageData = new ImageData(Uint8ClampedArray.from(temp), Math.ceil(this.cols / ratio), Math.ceil(this.rows / ratio), { colorSpace: "srgb" })
-        console.log(`${Date.now() - date}ms`);
+        // console.log(`${Date.now() - date}ms`);
         ctx.putImageData(imageData, (thumbnails_size - Math.ceil(this.cols / ratio)) / 2, (thumbnails_size - Math.ceil(this.rows / ratio)) / 2)
 
 

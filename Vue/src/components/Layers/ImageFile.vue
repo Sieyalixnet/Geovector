@@ -9,6 +9,7 @@
       </div>
       <div id="ImageFileContentFile">
         <File
+        class="file" 
           v-for="(item, index) in ImageFileList.List"
           :key="item.name"
           :file="item"
@@ -70,6 +71,10 @@ provide("ImageFileList", ImageFileList);
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  .file{
+    margin-top: 10px;
+
+  }
   #FileAndFileOperation {
     width: 100%;
 

@@ -54,6 +54,29 @@ let exec_calculate = () => {
     alert("Please select an operation and a matrix");
     return;
   }
+
+  if (operation.value == "MM") {
+    if (props.layer.cols !== selected_martix.rows) {
+      alert(
+        "The number of columns of the first matrix is not equal to the number of rows of the second matrix"
+      );
+      return;
+    }
+  } else if (
+    operation.value == "Add" ||
+    operation.value == "Sub" ||
+    operation.value == "Mul" ||
+    operation.value == "Div"
+  ) {
+    if (
+      props.layer.rows !== selected_martix.rows ||
+      props.layer.cols !== selected_martix.cols
+    ) {
+      alert("The number of rows and columns of the two matrices are not equal");
+      return;
+    }
+  }
+
   switch (operation.value) {
     case "Add":
       props.layer.add(selected_martix);
