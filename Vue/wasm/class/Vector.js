@@ -1,10 +1,10 @@
-import { BaseVector } from "geo-vector";
+import { BaseVector,clear } from "geo-vector";
 import { memory } from "geo-vector/geo_vector_bg.wasm";
 import { reshape, reflect_to } from "../utils/array";
 import { downloadImage, createCanvas } from "../utils/canvas";
 import { downloadJSON } from "../utils/text";
 
-export function createVector(array, rows, cols) {//rows->height, cols->width
+export function createVector(array, rows, cols) {//rows is height, cols is width
     const data = new Vector(array, rows, cols);
     return new Proxy(data, VectorHandler(data));
 }
@@ -13,18 +13,16 @@ function VectorHandler(target) {
     return {
         get(target, key) {
             let res = Reflect.get(target, key);
-            // console.log(target.OptionalAttributes)
-            // console.log('get')
             return res
         },
         set(target, key, value) {
             let res = Reflect.set(target, key, value);
-            // console.log('set')
             return res
         }
     }
 }
 
+//Vector is a class of raw data of a channel of image. They will instantly pass to WASM, most operations will invoke the WASM and read from memory of WASM.
 export class Vector {
     constructor(data, rows, cols) {
         let _rows = rows
@@ -55,8 +53,7 @@ export class Vector {
     }
     drop() {
         this.Data.clear()
-        this.update()
-        this.Data.free()
+        clear(this.Data)
     }
     get_ptr() {
         return this.Data.get_ptr()
@@ -96,9 +93,6 @@ export class Vector {
         this.update()
         console.log("conv2d:", Date.now() - date, "ms")
     }
-    // conv2d_array(kernel, stride) {//this whill return a 1-dimension array
-    //     return this.Data.conv2d_array(kernel, stride)
-    // }
 
     update() {
         this.ptr = this.get_ptr()

@@ -1,6 +1,6 @@
 import { Vector, createVector } from "./Vector"
 import { downloadJSON } from "../utils/text"
-export class ImageVector {
+export class ImageVector {//ImageVector is a class that store data JSON / PNG file.
     //We need to use other mothod to create a ImageVector instead of using a consturctor
     constructor() {
         this.name = `Default_${Date.now()}`
@@ -44,6 +44,9 @@ export class ImageVector {
         }
     }
     delete(index) {
+        let main_canvas = document.getElementById("main_canvas")
+        main_canvas.remove()
+
         this.ChannelList[index].drop()
         this.ChannelList[index] = null
         //console.log(this.ChannelList[index])

@@ -38,10 +38,12 @@ impl BaseVector {
         }
         string
     }
-    pub fn clear(&mut self) {
-        self.data = vec![];
-        self.total_rows = 0;
-        self.total_cols = 0;
+    pub fn clear(&self) {
+        for i in 0..self.data.len(){
+            drop(self.data[i]);
+        };
+        drop(self.total_rows);
+        drop(self.total_cols);
     }
     // a JSarray Example
     // pub fn reset() -> js_sys::Array {
@@ -187,11 +189,6 @@ impl BaseVector {
                 }
             })
             .collect();
-        // for i in 0..self.data.len() {
-        //     if self.data[i] >= min_range && self.data[i] <= max_range {
-        //         self.data[i] = new_value;
-        //     }
-        // }
     }
     pub fn range_reflect(
         &mut self,
@@ -254,8 +251,7 @@ impl BaseVector {
         self.total_cols = new_data[0].len();
         self.data = new_data.into_iter().flat_map(|x| x).collect();
     }
-    pub fn conv2d_array(&self, kernel: Vec<f64>, stride: usize) -> Vec<f64> {
-        //let _timer = Timer::new("conv2d");
+    pub fn conv2d_to_array(&self, kernel: Vec<f64>, stride: usize) -> Vec<f64> {
         let kernel = reshape(&kernel, (kernel.len() as f64).sqrt().floor() as usize);
         let mut result: Vec<f64> = Vec::new();
 
@@ -284,7 +280,6 @@ impl BaseVector {
         result
     }
     pub fn conv2d(&mut self, kernel: Vec<f64>, stride: usize) {
-        //let _timer = Timer::new("conv2d");
         let kernel = reshape(&kernel, (kernel.len() as f64).sqrt().floor() as usize);
         let mut result: Vec<f64> = Vec::new();
 
@@ -408,7 +403,8 @@ impl BaseVector {
         self.data = result.into_iter().flat_map(|x| x).collect();
     }
 
-    // //PARTS: Outputs
+    //PARTS: Outputs
+    //WARNING: DO NOT USE THE METHODS ABOVE HERE, IT WILL LEAD TO MEMORY LEAKS.
     // pub fn render(&self, reflect: bool) -> Vec<u8> {
     //     //TODO need to calculate the real pixel value
     //     let mut result: Vec<u8> = Vec::new();
@@ -515,13 +511,13 @@ impl BaseVector {
         return Some(((count) / (kernel_length as f64).powi(2), row as usize)); //if we need ignore the center, we should change the kernel_length to kernel_length-1
     }
     pub fn get_index_2d(&self, rows: i32, cols: i32) -> i32 {
-        //
         let position = rows * self.total_cols as i32 + cols;
         return position;
     }
 }
 
-////! DO NOT USE ANY LOG!() IN A TEST////
+////! DO NOT USE ANY LOG!() WHEN USE `cargo test` ////
+// THESE TEST CANNOT TEST ALL THE FUNCTIONS OR METHODS ON THIS FILE. YOU MAY NEED TO WRITE ANOTHER TESTS.
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -534,7 +530,7 @@ mod tests {
         let mut a = BaseVector::new(5, 8, test_vec);
         let kernel = vec![0.5; 16];
 
-        let b = a.conv2d_array(kernel.clone(), 1);
+        let b = a.conv2d_to_array(kernel.clone(), 1);
         println!("{:?}", &b.len());
         println!("{:?}", &b);
 
@@ -576,7 +572,7 @@ mod tests {
     }
 
     // #[test]
-    //decrepted
+    //Deprecated
     // pub fn render_thumbnails_test() {
     //     let mut test_vec = vec![0.0; 100];
     //     for i in 0..test_vec.len() {

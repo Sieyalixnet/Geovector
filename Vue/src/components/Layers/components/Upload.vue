@@ -17,6 +17,7 @@ let input = () => {
 
 function HandleChangeFile(e) {
   let file = e.target.files[0];
+  console.log(e,e.target.files)
   let name = file.name;
   let fileReader = new FileReader();
   let permittedImageFormat = ["image/png", "image/jpeg"];

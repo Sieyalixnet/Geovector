@@ -1,3 +1,5 @@
+//reshape the array, like torch.tensor.reshape
+//(array,array)->(array)
 export function reshape(tensor, shape) {
     function _reshape(tensor, shapeValue) {
         let result = []
@@ -26,6 +28,7 @@ export function reshape(tensor, shape) {
     return (tensor[0])
 }
 
+// (array, num, num) -> (num,num)
 export function reflect_to(data, min_reflect, max_reflect) {
     const max = data.reduce((a, b) => Math.max(a, b), -Infinity)
     const min = data.reduce((a, b) => Math.min(a, b), Infinity)
@@ -34,10 +37,12 @@ export function reflect_to(data, min_reflect, max_reflect) {
     return result;
 }
 
+// (array)->(value)
 export function max_f64(data){
     return data.reduce((a, b) => Math.max(a, b), -Infinity)
 }
 
+// (array)->(value)
 export function min_f64(data){
     return data.reduce((a, b) => Math.min(a, b), Infinity)
 

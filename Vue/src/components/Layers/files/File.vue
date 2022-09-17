@@ -136,6 +136,7 @@ watch(
     .layer {
       width: 100%;
       margin-top: 0.3125rem;
+
     }
     .layer:first-child {
       margin-top: 0;
