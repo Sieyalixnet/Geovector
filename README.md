@@ -2,7 +2,7 @@
 
 ## About this project
 
-This project is a single channel based image processing software on web. It uses Web Assembly basing on Rust, which make it extremely fast. You can easily use some matrix operations on it.
+This project is a single channel based image processing software on web. It uses Web Assembly basing on Rust, which makes it extremely fast. You can easily use some matrix operations on it.
 
 ## How to use
 
@@ -18,4 +18,4 @@ The environment above you need to firstly setup:
 2. Rustup
 3. WASM-Pack on Rust. <https://rustwasm.github.io/docs/book/game-of-life/setup.html>
 
-You also should pay attention about the License.
+This project is licensed under the terms of the MIT license.
