@@ -12,6 +12,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "geo-vector": "file:../pkg",
+    "sass": "^1.55.0",
     "vue": "^3.0.0"
   },
   "devDependencies": {
@@ -19,7 +20,6 @@
     "@vue/cli-service": "~4.5.14",
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
-    "node-sass": "^5.0.0",
     "sass-loader": "^10.1.0"
   },
   "browserslist": [
