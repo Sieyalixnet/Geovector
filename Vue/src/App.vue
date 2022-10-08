@@ -76,6 +76,32 @@ provide("WASM_Module", WASM_Module);
   font-family: Avenir, Helvetica, Arial, sans-serif;
   color: #2c3e50;
 }
+
+.dark{
+  background-image: linear-gradient(0deg, #112222,  #112233);
+  .header{
+    text-shadow: 0 0 3px #fff;
+    .content{
+      background-color:#112233 ;
+    }
+  }
+  .bottom{
+    background-image: linear-gradient(
+      rgba(141, 246, 183, 0.4),
+      rgba(21, 126, 63, 0.4)
+    );
+
+  }
+  #ImageFileContent{
+    #FileOperationContent{
+      background-color: rgba(255,255,255,0.6);
+    }
+    #FileContent{
+      background-color: rgba(255,255,255,0.6);
+    }
+  }
+
+}
 </style>
 
 <style lang="scss" scoped>

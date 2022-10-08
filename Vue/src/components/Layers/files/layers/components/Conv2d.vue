@@ -21,7 +21,13 @@
             v-model="kernel.kernel[index * kernel.kernel_size + inner_index]"
           />
         </span>
+       
       </div>
+    </div>
+
+    <div class="BlockMargin" v-if="kernel.kernel_size==3">
+      <LabelSelector :label="`Kernel Mode 3x3`" :list="Object.keys(conv2DMode)" v-model:value="conv2DMode_Selected" @change="modeChanged()"></LabelSelector>
+
     </div>
     <div>
       <button style="padding:0.625rem;" class="BlockMargin" @click="exec_conv2d()">conv2d!</button>
@@ -31,8 +37,9 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref,inject } from "vue";
+import { onMounted, reactive, ref,inject, watch } from "vue";
 import LabelInput from "./components/LabelInput.vue";
+import LabelSelector from "./components/LabelSelector.vue";
 const props = defineProps(["layer"]);
 const update_thumbnails=inject("update_thumbnails");
 let kernel = reactive({
@@ -41,6 +48,114 @@ let kernel = reactive({
   kernel: [],
 });
 let stride = ref(1);
+let conv2DMode ={
+    Normal: [
+      0, 0, 0,
+      0, 1, 0,
+      0, 0, 0
+    ],
+    GaussianBlur: [
+      0.045, 0.122, 0.045,
+      0.122, 0.332, 0.122,
+      0.045, 0.122, 0.045
+    ],
+    GaussianBlur2: [
+      1, 2, 1,
+      2, 4, 2,
+      1, 2, 1
+    ],
+    GaussianBlur3: [
+      0, 1, 0,
+      1, 1, 1,
+      0, 1, 0
+    ],
+    Unsharpen: [
+      -1, -1, -1,
+      -1,  9, -1,
+      -1, -1, -1
+    ],
+    Sharpness: [
+       0,-1, 0,
+      -1, 5,-1,
+       0,-1, 0
+    ],
+    Sharpen: [
+       -1, -1, -1,
+       -1, 16, -1,
+       -1, -1, -1
+    ],
+    EdgeDetect: [
+       -0.125, -0.125, -0.125,
+       -0.125,  1,     -0.125,
+       -0.125, -0.125, -0.125
+    ],
+    EdgeDetect2: [
+       -1, -1, -1,
+       -1,  8, -1,
+       -1, -1, -1
+    ],
+    EdgeDetect3: [
+       -5, 0, 0,
+        0, 0, 0,
+        0, 0, 5
+    ],
+    EdgeDetect4: [
+       -1, -1, -1,
+        0,  0,  0,
+        1,  1,  1
+    ],
+    EdgeDetect5: [
+       -1, -1, -1,
+        2,  2,  2,
+       -1, -1, -1
+    ],
+   EdgeDetect6: [
+       -5, -5, -5,
+       -5, 39, -5,
+       -5, -5, -5
+    ],
+    SobelHorizontal: [
+        1,  2,  1,
+        0,  0,  0,
+       -1, -2, -1
+    ],
+    SobelVertical: [
+        1,  0, -1,
+        2,  0, -2,
+        1,  0, -1
+    ],
+    PrevitHorizontal: [
+        1,  1,  1,
+        0,  0,  0,
+       -1, -1, -1
+    ],
+    PrevitVertical: [
+        1,  0, -1,
+        1,  0, -1,
+        1,  0, -1
+    ],
+    BoxBlur: [
+        0.111, 0.111, 0.111,
+        0.111, 0.111, 0.111,
+        0.111, 0.111, 0.111
+    ],
+    TriangleBlur: [
+        0.0625, 0.125, 0.0625,
+        0.125,  0.25,  0.125,
+        0.0625, 0.125, 0.0625
+    ],
+    Emboss: [
+       -2, -1,  0,
+       -1,  1,  1,
+        0,  1,  2
+    ]
+  }
+  let conv2DMode_Selected = ref("");
+let modeChanged = ()=>{
+    if(kernel.kernel_size==3 && conv2DMode_Selected.value!=""){
+      kernel.kernel=conv2DMode[conv2DMode_Selected.value]
+    }
+  }
 
 let exec_conv2d = () => {
 
